@@ -1,2 +1,2 @@
 # VU3EFZ-Ham
-Ham Related
+This is my repository of tools which we can use to programme radio sets or practice CW
