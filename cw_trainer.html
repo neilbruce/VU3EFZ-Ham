@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CW Trainer</title>
+<style>
+  :root{
+    --panel:#1b1d19; --panel-deep:#121310; --metal:#2b2e28; --metal-light:#3e423a;
+    --amber:#ffb000; --amber-dim:rgba(255,176,0,0.22);
+    --green:#4ade80; --green-dim:rgba(74,222,128,0.16);
+    --red:#ff5c5c; --text-dim:#8b9086;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:#0a0b09; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    padding:20px;
+  }
+  .card{
+    width:100%; max-width:640px; border-radius:16px; padding:24px;
+    background:linear-gradient(160deg,var(--panel),var(--panel-deep));
+    border:1px solid var(--metal-light);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.04), 0 20px 40px rgba(0,0,0,0.5);
+  }
+  .header{display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;}
+  .title{color:var(--amber); letter-spacing:.12em; font-size:14px; font-weight:700;}
+  .subtitle{color:var(--text-dim); font-size:10px; text-transform:uppercase; letter-spacing:.08em;}
+  .rank-label{color:var(--text-dim); font-size:10px; text-transform:uppercase; text-align:right;}
+  .rank-val{color:var(--amber); font-size:13px; font-weight:700;}
+  .lcd{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:20px;
+    background:var(--panel-deep); border:1px solid var(--metal-light); border-radius:10px; padding:12px;
+  }
+  .lcd-item{text-align:center;}
+  .lcd-label{color:var(--text-dim); font-size:9px; letter-spacing:.15em;}
+  .lcd-val{color:var(--amber); font-size:18px; font-weight:700; text-shadow:0 0 8px var(--amber-dim);}
+  .levelup{
+    margin-bottom:16px; border-radius:10px; padding:8px; text-align:center; font-size:13px; font-weight:700;
+    background:var(--green-dim); color:var(--green); border:1px solid var(--green); display:none;
+  }
+  .bank-label{color:var(--text-dim); font-size:10px; letter-spacing:.15em; margin-bottom:6px;}
+  .bank{display:grid; grid-template-columns:repeat(10,1fr); gap:6px; margin-bottom:20px;}
+  .cell{
+    aspect-ratio:1; border-radius:5px; display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:700; background:var(--metal); color:var(--text-dim);
+    border:1px solid var(--metal-light);
+  }
+  .cell.unlocked{background:var(--green-dim); color:var(--green); border-color:var(--green); box-shadow:0 0 6px var(--green-dim);}
+  .cell.newest{border-color:var(--amber);}
+  .practice{
+    border-radius:10px; padding:16px; margin-bottom:20px; min-height:92px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+    background:var(--panel-deep); border:1px solid var(--metal-light); text-align:center;
+  }
+  .practice .hint{color:var(--text-dim); font-size:12px;}
+  .practice .sending{color:var(--amber); font-size:14px; letter-spacing:.3em;}
+  #typedInput{
+    width:100%; text-align:center; font-size:26px; letter-spacing:.4em; border-radius:6px; padding:10px;
+    background:var(--panel); color:var(--amber); border:1px solid var(--amber); outline:none;
+    font-family:inherit; text-transform:uppercase;
+  }
+  .feedback-row{display:flex; gap:8px; justify-content:center; margin-bottom:6px;}
+  .fb-char{
+    font-size:20px; font-weight:700; width:28px; height:28px; display:flex; align-items:center;
+    justify-content:center; border-radius:6px;
+  }
+  .fb-correct{color:var(--green); border:1px solid var(--green);}
+  .fb-wrong{color:var(--red); border:1px solid var(--red);}
+  .fb-note{color:var(--text-dim); font-size:11px;}
+  .controls{display:flex; align-items:center; gap:10px; margin-bottom:20px;}
+  button{
+    font-family:inherit; cursor:pointer; border:none; font-weight:700;
+  }
+  #sendBtn{
+    flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+    border-radius:999px; padding:13px; font-size:14px; background:var(--amber); color:#1a1a18;
+  }
+  #sendBtn:disabled{background:var(--metal); color:var(--text-dim); opacity:.6; cursor:default;}
+  #checkBtn{
+    border-radius:999px; padding:13px 18px; font-size:14px; background:var(--metal);
+    color:var(--green); border:1px solid var(--green); display:none;
+  }
+  #replayBtn{
+    border-radius:999px; padding:13px; background:var(--metal); color:var(--text-dim);
+    border:1px solid var(--metal-light); opacity:.4;
+  }
+  #replayBtn.active{opacity:1;}
+  .knobs{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .knob-label{color:var(--text-dim); font-size:10px; letter-spacing:.15em; margin-bottom:4px;}
+  input[type=range]{width:100%;}
+  .footer{color:var(--text-dim); font-size:10px; text-align:center; margin-top:20px;}
+  .share-note{color:var(--text-dim); font-size:10px; text-align:center; margin-top:8px; opacity:.7;}
+
+  .mode-row{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap;}
+  .mode-toggle{display:flex; gap:6px;}
+  .mode-btn{
+    padding:7px 14px; border-radius:999px; font-size:11px; letter-spacing:.08em;
+    background:var(--metal); color:var(--text-dim); border:1px solid var(--metal-light);
+  }
+  .mode-btn.active{background:var(--amber-dim); color:var(--amber); border-color:var(--amber);}
+  .mode-btn:disabled{opacity:.4; cursor:default;}
+  .session-row{display:flex; align-items:center; gap:8px; font-size:11px; color:var(--text-dim);}
+  select, .num-input{
+    font-family:inherit; background:var(--panel); color:var(--amber); border:1px solid var(--metal-light);
+    border-radius:6px; padding:5px 8px; font-size:11px;
+  }
+  .session-timer{
+    display:none; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--panel-deep); border:1px solid var(--metal-light); border-radius:8px;
+    padding:8px 12px; margin-bottom:14px; font-size:11px; color:var(--text-dim);
+  }
+  .session-timer .t{color:var(--amber); font-weight:700; font-size:13px;}
+  .summary-banner{
+    display:none; background:var(--amber-dim); border:1px solid var(--amber); border-radius:10px;
+    padding:14px; margin-bottom:16px; text-align:center;
+  }
+  .summary-banner .headline{color:var(--amber); font-weight:700; font-size:13px; margin-bottom:6px;}
+  .summary-banner .detail{color:var(--text-dim); font-size:11px; margin-bottom:10px;}
+  .summary-actions{display:flex; gap:8px; justify-content:center;}
+  .summary-actions button{
+    padding:8px 16px; border-radius:999px; font-size:11px; font-weight:700;
+  }
+  #summaryContinue{background:var(--amber); color:#1a1a18;}
+  #summaryStop{background:var(--metal); color:var(--text-dim); border:1px solid var(--metal-light);}
+  .discipline-note{color:var(--text-dim); font-size:10px; text-align:center; margin-top:6px; opacity:.6; line-height:1.5;}
+
+  .fast-toggle{
+    padding:7px 12px; border-radius:999px; font-size:11px; background:var(--metal); color:var(--text-dim);
+    border:1px solid var(--metal-light);
+  }
+  .fast-toggle.active{background:var(--red); color:#fff; border-color:var(--red);}
+
+  .intro-tip{
+    background:var(--amber-dim); border:1px solid var(--amber); border-radius:10px;
+    padding:12px 14px; margin-bottom:16px; font-size:11px; color:var(--amber); line-height:1.6;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .intro-tip button{
+    background:var(--amber); color:#1a1a18; border-radius:999px; padding:6px 12px; font-size:10px; flex-shrink:0;
+  }
+  .placement-row{display:flex; justify-content:flex-end; margin-bottom:10px;}
+  #placementBtn{
+    background:var(--metal); color:var(--text-dim); border:1px solid var(--metal-light);
+    border-radius:999px; padding:6px 14px; font-size:10px; letter-spacing:.05em;
+  }
+  .plan-bar{
+    display:none; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--panel-deep); border:1px solid var(--metal-light); border-radius:8px;
+    padding:8px 12px; margin-bottom:14px; font-size:11px; color:var(--text-dim);
+  }
+  .plan-bar .status{font-weight:700;}
+  .plan-bar .status.ahead{color:var(--green);}
+  .plan-bar .status.behind{color:var(--red);}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div>
+      <div class="title">📻 CW TRAINER</div>
+      <div class="subtitle">Koch Method · Farnsworth Timing</div>
+    </div>
+    <div>
+      <div class="rank-label">Rank</div>
+      <div class="rank-val" id="rankVal">Spark Gap</div>
+    </div>
+  </div>
+
+  <div class="lcd">
+    <div class="lcd-item"><div class="lcd-label">LEVEL</div><div class="lcd-val" id="lvlVal">2/39</div></div>
+    <div class="lcd-item"><div class="lcd-label">STREAK</div><div class="lcd-val" id="streakVal">🔥0</div></div>
+    <div class="lcd-item"><div class="lcd-label">XP</div><div class="lcd-val" id="xpVal">⚡0</div></div>
+    <div class="lcd-item"><div class="lcd-label">ACCURACY</div><div class="lcd-val" id="accVal">—</div></div>
+  </div>
+
+  <div class="levelup" id="levelUpBanner"></div>
+
+  <div class="intro-tip" id="introTip">
+    <span>New here: hit SEND, listen, type the letters you heard, hit CHECK. That's the whole loop — repeat it.</span>
+    <button id="introDismiss">GOT IT</button>
+  </div>
+
+  <div class="placement-row">
+    <button id="placementBtn">ALREADY KNOW MORSE? TAKE PLACEMENT TEST</button>
+  </div>
+
+  <div class="plan-bar" id="planBar">
+    <span id="planText">—</span>
+    <span class="status" id="planStatus"></span>
+  </div>
+
+  <div class="bank-label">CHARACTER BANK</div>
+  <div class="bank" id="bank"></div>
+
+  <div class="mode-row">
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="modeGroups">GROUPS</button>
+      <button class="mode-btn" id="modeWords">WORDS</button>
+      <button class="fast-toggle" id="fastToggle" title="Loosens the unlock requirement — for relearners, not first-timers">FAST UNLOCK: OFF</button>
+    </div>
+    <div class="session-row">
+      SESSION:
+      <select id="sessionLen">
+        <option value="0">No limit</option>
+        <option value="5">5 min</option>
+        <option value="10">10 min</option>
+        <option value="15">15 min</option>
+        <option value="20">20 min</option>
+        <option value="25">25 min</option>
+        <option value="30">30 min</option>
+        <option value="45">45 min</option>
+        <option value="60">60 min</option>
+        <option value="custom">Custom…</option>
+      </select>
+      <input type="number" id="customLen" class="num-input" placeholder="min" min="1" style="display:none; width:56px;">
+    </div>
+  </div>
+
+  <div class="session-timer" id="sessionTimer">
+    <span>Session in progress</span>
+    <span class="t" id="sessionTimeLeft">00:00</span>
+  </div>
+
+  <div class="summary-banner" id="summaryBanner">
+    <div class="headline" id="summaryHeadline">Session complete</div>
+    <div class="detail" id="summaryDetail"></div>
+    <div class="summary-actions">
+      <button id="summaryContinue">KEEP GOING</button>
+      <button id="summaryStop">STOP HERE</button>
+    </div>
+  </div>
+
+  <div class="practice" id="practice">
+    <div class="hint">Press SEND to copy a 5-character group.<br>Type what you hear — don't peek, just listen.</div>
+  </div>
+
+  <div class="controls">
+    <button id="sendBtn">▶ SEND</button>
+    <button id="checkBtn">CHECK</button>
+    <button id="replayBtn" title="Replay this group">↺</button>
+  </div>
+
+  <div class="knobs">
+    <div>
+      <div class="knob-label" id="charWpmLabel">CHARACTER SPEED — 20 WPM</div>
+      <input type="range" id="charWpm" min="15" max="25" value="20">
+    </div>
+    <div>
+      <div class="knob-label" id="effWpmLabel">EFFECTIVE SPEED — 10 WPM</div>
+      <input type="range" id="effWpm" min="5" max="20" value="10">
+    </div>
+  </div>
+
+  <div class="footer" id="footerStats">0 groups today · 0 lifetime · best streak 0d</div>
+  <div class="share-note">Runs 100% offline — no internet, no server. Send this file to anyone; progress is saved per-browser.</div>
+  <div class="discipline-note">Copy by ear only — no dot-dash chart while training. Once you're past ~15 characters, try letting 1-2 letters lag behind what's playing before you write them; that's how real head-copy works.</div>
+</div>
+
+<script>
+const MORSE = {
+  A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",J:".---",
+  K:"-.-",L:".-..",M:"--",N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",
+  U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--..",
+  0:"-----",1:".----",2:"..---",3:"...--",4:"....-",5:".....",6:"-....",7:"--...",8:"---..",9:"----.",
+  ".":".-.-.-",",":"--..--","?":"..--..","/":"-..-."
+};
+const KOCH_ORDER = ["K","M","U","R","S","A","P","T","L","O","W","I",".","N","J","E","F","0",
+  "Y",",","V","G","5","/","Q","9","Z","H","3","8","B","?","4","2","7","C","1","D","6","X"];
+const RANKS = [
+  {min:0,name:"Spark Gap"},{min:6,name:"Crystal Set"},{min:12,name:"Regen Receiver"},
+  {min:20,name:"Superheterodyne"},{min:30,name:"Elmer"},{min:39,name:"Full Copy"}
+];
+const WORDS = [
+  "THE","AND","YOU","ARE","FOR","NOT","BUT","ALL","CAN","HER","WAS","ONE","OUR","OUT","DAY",
+  "GET","HAS","HIM","HIS","HOW","MAN","NEW","NOW","OLD","SEE","TWO","WAY","WHO","BOY","DID",
+  "ITS","LET","PUT","SAY","SHE","TOO","USE","DOG","CAT","SUN","RUN","BIG","RED","TEN","YES",
+  "YET","WHY","TRY","ASK","DE","TU","ES","OM","YL","RIG","ANT","QTH","QSO","QSL","RST","WPM",
+  "HAM","NET","CALL","NAME","RADIO","POWER","SIGNAL","THANKS","GOOD","NIGHT","MORNING","HELLO",
+  "WORLD","TIME","YEAR","WORK","LIFE","HAND","PART","PLACE","WEEK","CASE","POINT","GROUP","FACT"
+];
+const STORAGE_KEY = "cw-trainer-progress";
+const DEFAULT_STATS = {
+  unlockedCount:2, xp:0, streakDays:0, bestStreak:0, lastPracticeDate:null,
+  groupsCompletedToday:0, lifetimeGroups:0, charStats:{}, rollingGroups:[],
+  firstPracticeDate:null, seenIntro:false, fastUnlock:false
+};
+
+let stats = loadStats();
+let charWpm = 20, effWpm = 10;
+let sessionState = "idle"; // idle | playing | input | feedback
+let currentGroup = "";
+let audioCtx = null;
+let practiceMode = "groups"; // groups | words
+
+// session timer state
+let sessionMinutes = 0; // 0 = no limit
+let sessionStartedAt = null;
+let sessionXpStart = 0;
+let sessionGroupsStart = 0;
+let sessionCorrectChars = 0;
+let sessionTotalChars = 0;
+let sessionTimerHandle = null;
+let sessionEnded = false;
+
+// placement test state
+let placementActive = false;
+let placementIndex = 0;
+let placementLastGood = -1;
+let placementCorrect = 0;
+let placementTotal = 0;
+let placementConsecWrong = 0;
+
+function loadStats(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return {...DEFAULT_STATS, ...JSON.parse(raw)};
+  }catch(e){}
+  return {...DEFAULT_STATS};
+}
+function saveStats(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(stats)); }catch(e){}
+}
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function getRank(count){
+  let r = RANKS[0].name;
+  for(const rank of RANKS) if(count >= rank.min) r = rank.name;
+  return r;
+}
+function computeTiming(cWpm, eWpm){
+  const dit = 1.2/cWpm;
+  if(eWpm >= cWpm) return {dit, dash:dit*3, intraGap:dit, charGap:dit*3, wordGap:dit*7};
+  const wordSecEff = 60/eWpm;
+  const contentSec = 31*dit;
+  const spaceSec = Math.max(wordSecEff - contentSec, 19*dit);
+  const unitSpace = spaceSec/19;
+  return {dit, dash:dit*3, intraGap:dit, charGap:unitSpace*3, wordGap:unitSpace*7};
+}
+function unlockedChars(){ return KOCH_ORDER.slice(0, stats.unlockedCount); }
+function generateGroup(size){
+  size = size || 5;
+  const chars = unlockedChars();
+  const newest = chars[chars.length-1];
+  // Weight: base weight 1 for every unlocked char, +2 for the newest (still fresh),
+  // and up to +9 more for chars with low accuracy so far (min 6 reps before penalizing,
+  // so a char isn't over-weighted from one unlucky early miss).
+  const pool = [];
+  chars.forEach(c => {
+    let weight = 1;
+    if(c === newest) weight += 2;
+    const s = stats.charStats[c];
+    if(s && s.total >= 6){
+      const acc = s.correct / s.total;
+      if(acc < 0.9) weight += Math.round((0.9 - acc) * 10);
+    }
+    for(let i=0;i<weight;i++) pool.push(c);
+  });
+  let g = "";
+  for(let i=0;i<size;i++) g += pool[Math.floor(Math.random()*pool.length)];
+  return g;
+}
+
+function availableWords(){
+  const chars = new Set(unlockedChars());
+  return WORDS.filter(w => w.split("").every(c => chars.has(c)));
+}
+
+function generateItem(){
+  if(practiceMode === "words"){
+    const avail = availableWords();
+    if(avail.length > 0) return avail[Math.floor(Math.random()*avail.length)];
+  }
+  return generateGroup(5);
+}
+
+function playGroup(text){
+  return new Promise((resolve) => {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const start = () => {
+      const timing = computeTiming(charWpm, effWpm);
+      let t = audioCtx.currentTime + 0.15;
+      text.split("").forEach(ch => {
+        if(ch === " "){ t += timing.wordGap; return; }
+        const pattern = MORSE[ch];
+        if(!pattern) return;
+        pattern.split("").forEach(sym => {
+          const dur = sym === "." ? timing.dit : timing.dash;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.frequency.value = 600; osc.type = "sine";
+          gain.gain.setValueAtTime(0, t);
+          gain.gain.linearRampToValueAtTime(0.3, t+0.005);
+          gain.gain.setValueAtTime(0.3, Math.max(t+dur-0.005, t+0.006));
+          gain.gain.linearRampToValueAtTime(0, t+dur);
+          osc.connect(gain).connect(audioCtx.destination);
+          osc.start(t); osc.stop(t+dur+0.01);
+          t += dur + timing.intraGap;
+        });
+        t = t - timing.intraGap + timing.charGap;
+      });
+      const totalMs = (t - audioCtx.currentTime) * 1000;
+      resolve(totalMs);
+    };
+    if(audioCtx.state === "suspended") audioCtx.resume().then(start); else start();
+  });
+}
+
+// ---- DOM refs ----
+const el = id => document.getElementById(id);
+const sendBtn = el("sendBtn"), checkBtn = el("checkBtn"), replayBtn = el("replayBtn");
+const practiceEl = el("practice");
+const charWpmSlider = el("charWpm"), effWpmSlider = el("effWpm");
+
+function render(){
+  el("rankVal").textContent = getRank(stats.unlockedCount);
+  el("lvlVal").textContent = `${stats.unlockedCount}/${KOCH_ORDER.length}`;
+  el("streakVal").textContent = `🔥${stats.streakDays}`;
+  el("xpVal").textContent = `⚡${stats.xp}`;
+  const totals = Object.values(stats.charStats).reduce((a,c)=>({correct:a.correct+c.correct,total:a.total+c.total}),{correct:0,total:0});
+  el("accVal").textContent = totals.total ? Math.round(totals.correct/totals.total*100)+"%" : "—";
+  el("footerStats").textContent = `${stats.groupsCompletedToday} groups today · ${stats.lifetimeGroups} lifetime · best streak ${stats.bestStreak}d`;
+  el("charWpmLabel").textContent = `CHARACTER SPEED — ${charWpm} WPM`;
+  el("effWpmLabel").textContent = `EFFECTIVE SPEED — ${effWpm} WPM`;
+
+  const bank = el("bank");
+  bank.innerHTML = "";
+  KOCH_ORDER.forEach((c,i) => {
+    const div = document.createElement("div");
+    const unlocked = i < stats.unlockedCount;
+    const newest = i === stats.unlockedCount - 1;
+    div.className = "cell" + (unlocked ? " unlocked" : "") + (newest ? " newest" : "");
+    div.textContent = c;
+    bank.appendChild(div);
+  });
+
+  charWpmSlider.disabled = sessionState !== "idle";
+  effWpmSlider.disabled = sessionState !== "idle";
+  sendBtn.disabled = sessionState === "playing";
+  replayBtn.classList.toggle("active", !!currentGroup && sessionState !== "playing");
+  checkBtn.style.display = sessionState === "input" ? "inline-block" : "none";
+  sendBtn.textContent = sessionState === "feedback" ? "▶ NEXT GROUP" : sessionState === "idle" ? "▶ SEND" : "▶ SENDING…";
+
+  const modeLocked = sessionState === "playing" || sessionState === "input" || placementActive;
+  el("modeGroups").disabled = modeLocked;
+  el("modeWords").disabled = modeLocked;
+  el("modeGroups").classList.toggle("active", practiceMode === "groups");
+  el("modeWords").classList.toggle("active", practiceMode === "words");
+
+  const fastBtn = el("fastToggle");
+  fastBtn.textContent = `FAST UNLOCK: ${stats.fastUnlock ? "ON" : "OFF"}`;
+  fastBtn.classList.toggle("active", stats.fastUnlock);
+
+  renderPlanBar();
+  el("introTip").style.display = stats.seenIntro ? "none" : "flex";
+}
+
+function renderPlanBar(){
+  const bar = el("planBar");
+  if(!stats.firstPracticeDate){ bar.style.display = "none"; return; }
+  bar.style.display = "flex";
+  const daysElapsed = Math.floor((new Date(todayStr()) - new Date(stats.firstPracticeDate)) / 86400000) + 1;
+  const day = Math.min(daysElapsed, 7);
+  const target = Math.min(KOCH_ORDER.length, Math.round(day / 7 * KOCH_ORDER.length));
+  const statusEl = el("planStatus");
+  if(daysElapsed > 7){
+    el("planText").textContent = `Past day 7 · ${stats.unlockedCount}/${KOCH_ORDER.length} characters`;
+    statusEl.textContent = stats.unlockedCount >= KOCH_ORDER.length ? "COMPLETE" : "FINISH LINE";
+    statusEl.className = "status " + (stats.unlockedCount >= KOCH_ORDER.length ? "ahead" : "behind");
+  } else {
+    el("planText").textContent = `Day ${daysElapsed} of 7 · target ${target} chars · you have ${stats.unlockedCount}`;
+    const onPace = stats.unlockedCount >= target;
+    statusEl.textContent = onPace ? "ON PACE" : "BEHIND";
+    statusEl.className = "status " + (onPace ? "ahead" : "behind");
+  }
+}
+
+function formatMMSS(ms){
+  const s = Math.max(0, Math.round(ms/1000));
+  const m = Math.floor(s/60), r = s%60;
+  return `${String(m).padStart(2,"0")}:${String(r).padStart(2,"0")}`;
+}
+
+function updateSessionTimerUI(){
+  const box = el("sessionTimer");
+  if(sessionMinutes <= 0 || !sessionStartedAt){ box.style.display = "none"; return; }
+  box.style.display = "flex";
+  const elapsed = Date.now() - sessionStartedAt;
+  const remaining = sessionMinutes*60000 - elapsed;
+  el("sessionTimeLeft").textContent = formatMMSS(remaining);
+}
+
+function maybeEndSession(){
+  if(sessionMinutes <= 0 || !sessionStartedAt || sessionEnded) return;
+  const elapsed = Date.now() - sessionStartedAt;
+  if(elapsed >= sessionMinutes*60000 && (sessionState === "idle" || sessionState === "feedback")){
+    sessionEnded = true;
+    const groupsThisSession = stats.lifetimeGroups - sessionGroupsStart;
+    const xpThisSession = stats.xp - sessionXpStart;
+    const acc = sessionTotalChars ? Math.round(sessionCorrectChars/sessionTotalChars*100) : 0;
+    el("summaryHeadline").textContent = `Session complete — ${sessionMinutes} min`;
+    el("summaryDetail").textContent = `${groupsThisSession} groups · ${acc}% accuracy · +${xpThisSession} XP`;
+    el("summaryBanner").style.display = "block";
+  }
+}
+
+function renderPracticeIdle(){
+  practiceEl.innerHTML = `<div class="hint">Press SEND to copy a 5-character group.<br>Type what you hear — don't peek, just listen.</div>`;
+}
+function renderPracticePlaying(){
+  practiceEl.innerHTML = `<div class="sending">◆ SENDING ◆</div>`;
+}
+function renderPracticeInput(){
+  const len = currentGroup.length;
+  practiceEl.innerHTML = `<input id="typedInput" placeholder="TYPE WHAT YOU HEARD" maxlength="${len}" autocomplete="off" />`;
+  const input = el("typedInput");
+  input.focus();
+  input.addEventListener("input", () => { input.value = input.value.toUpperCase().slice(0,len); });
+  input.addEventListener("keydown", e => { if(e.key === "Enter") handleCheck(); });
+}
+function renderPracticeFeedback(feedback){
+  const chars = feedback.sent.split("").map((c,i) => {
+    const ok = feedback.correctArr[i];
+    return `<span class="fb-char ${ok?'fb-correct':'fb-wrong'}">${c}</span>`;
+  }).join("");
+  practiceEl.innerHTML = `
+    <div class="feedback-row">${chars}</div>
+    <div class="fb-note">you copied: ${feedback.typed || "(nothing)"} · ${Math.round(feedback.groupAcc*100)}% this group</div>
+  `;
+}
+
+async function handleSend(replay){
+  if(!sessionStartedAt && sessionMinutes > 0){
+    sessionStartedAt = Date.now();
+    sessionXpStart = stats.xp;
+    sessionGroupsStart = stats.lifetimeGroups;
+    sessionCorrectChars = 0; sessionTotalChars = 0;
+    sessionEnded = false;
+  }
+  const group = (replay && currentGroup) ? currentGroup : generateItem();
+  currentGroup = group;
+  sessionState = "playing";
+  render(); renderPracticePlaying();
+  const totalMs = await playGroup(group);
+  setTimeout(() => {
+    sessionState = "input";
+    render(); renderPracticeInput();
+  }, totalMs);
+}
+
+function handleCheck(){
+  const inputEl = el("typedInput");
+  const raw = inputEl ? inputEl.value : "";
+  const sent = currentGroup;
+  const typed = raw.toUpperCase().padEnd(sent.length, " ").slice(0, sent.length);
+  const correctArr = sent.split("").map((c,i) => c === typed[i]);
+  const numCorrect = correctArr.filter(Boolean).length;
+  const groupAcc = numCorrect / sent.length;
+
+  sent.split("").forEach((c,i) => {
+    const prev = stats.charStats[c] || {correct:0,total:0};
+    stats.charStats[c] = {correct: prev.correct + (correctArr[i]?1:0), total: prev.total+1};
+  });
+
+  stats.rollingGroups = [...stats.rollingGroups, groupAcc].slice(-3);
+  let didLevelUp = false;
+  const threshold = stats.fastUnlock ? 1 : 3;
+  const recent = stats.rollingGroups.slice(-threshold);
+  if(recent.length >= threshold && recent.every(a=>a>=0.9) && stats.unlockedCount < KOCH_ORDER.length){
+    stats.unlockedCount += 1;
+    stats.rollingGroups = [];
+    didLevelUp = true;
+  }
+
+  const today = todayStr();
+  if(!stats.firstPracticeDate) stats.firstPracticeDate = today;
+  if(stats.lastPracticeDate !== today){
+    const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
+    stats.streakDays = (stats.lastPracticeDate === yesterday) ? stats.streakDays+1 : 1;
+    stats.lastPracticeDate = today;
+    stats.groupsCompletedToday = 0;
+  }
+  stats.groupsCompletedToday += 1;
+  stats.lifetimeGroups += 1;
+  stats.bestStreak = Math.max(stats.bestStreak, stats.streakDays);
+  stats.xp += numCorrect*10 + (didLevelUp ? 50 : 0);
+
+  sessionCorrectChars += numCorrect;
+  sessionTotalChars += sent.length;
+
+  saveStats();
+  sessionState = "feedback";
+  render();
+  renderPracticeFeedback({sent, typed: raw.toUpperCase(), correctArr, groupAcc});
+
+  if(didLevelUp){
+    const banner = el("levelUpBanner");
+    banner.textContent = `73! New character unlocked → ${KOCH_ORDER[stats.unlockedCount-1]}`;
+    banner.style.display = "block";
+    setTimeout(() => { banner.style.display = "none"; }, 3200);
+  }
+  maybeEndSession();
+}
+
+function startPlacementTest(){
+  placementActive = true;
+  placementIndex = 0; placementLastGood = -1; placementCorrect = 0; placementTotal = 0; placementConsecWrong = 0;
+  sendBtn.disabled = true; replayBtn.style.display = "none"; checkBtn.style.display = "none";
+  el("placementBtn").disabled = true;
+  charWpmSlider.disabled = true; effWpmSlider.disabled = true;
+  render();
+  runPlacementStep();
+}
+
+async function runPlacementStep(){
+  if(placementIndex >= KOCH_ORDER.length || placementConsecWrong >= 2){
+    finishPlacement();
+    return;
+  }
+  const ch = KOCH_ORDER[placementIndex];
+  practiceEl.innerHTML = `<div class="sending">◆ TESTING ${placementIndex+1}/${KOCH_ORDER.length} ◆</div>`;
+  const totalMs = await playGroup(ch);
+  setTimeout(() => {
+    practiceEl.innerHTML = `<input id="placementInput" maxlength="1" autocomplete="off" placeholder="?"
+      style="width:70px;text-align:center;font-size:26px;background:var(--panel);color:var(--amber);
+      border:1px solid var(--amber);border-radius:6px;padding:8px;font-family:inherit;text-transform:uppercase;" />`;
+    const input = el("placementInput");
+    input.focus();
+    let submitted = false;
+    const submit = () => {
+      if(submitted) return; submitted = true;
+      const val = input.value.toUpperCase();
+      placementTotal++;
+      if(val === ch){ placementCorrect++; placementLastGood = placementIndex; placementConsecWrong = 0; }
+      else { placementConsecWrong++; }
+      placementIndex++;
+      runPlacementStep();
+    };
+    input.addEventListener("keydown", e => { if(e.key === "Enter") submit(); });
+    input.addEventListener("input", () => { if(input.value.length >= 1) setTimeout(submit, 200); });
+  }, totalMs);
+}
+
+function finishPlacement(){
+  placementActive = false;
+  const newUnlocked = Math.max(2, Math.min(KOCH_ORDER.length, placementLastGood + 2));
+  stats.unlockedCount = newUnlocked;
+  stats.rollingGroups = [];
+  if(!stats.firstPracticeDate) stats.firstPracticeDate = todayStr();
+  saveStats();
+  sendBtn.disabled = false; replayBtn.style.display = "inline-block";
+  el("placementBtn").disabled = false;
+  charWpmSlider.disabled = false; effWpmSlider.disabled = false;
+  render();
+  practiceEl.innerHTML = `
+    <div class="hint" style="color:var(--green);font-weight:700;">
+      Placement set: ${newUnlocked} characters unlocked (${placementCorrect}/${placementTotal} correct on the test).
+    </div>
+    <div class="hint">Press SEND to jump straight into practice at your level.</div>
+  `;
+}
+
+sendBtn.addEventListener("click", () => {
+  if(sessionState === "playing" || placementActive) return;
+  handleSend(false);
+});
+checkBtn.addEventListener("click", handleCheck);
+replayBtn.addEventListener("click", () => { if(currentGroup && sessionState !== "playing" && !placementActive) handleSend(true); });
+charWpmSlider.addEventListener("input", e => { charWpm = Number(e.target.value); render(); });
+effWpmSlider.addEventListener("input", e => { effWpm = Number(e.target.value); render(); });
+el("placementBtn").addEventListener("click", startPlacementTest);
+el("fastToggle").addEventListener("click", () => {
+  stats.fastUnlock = !stats.fastUnlock;
+  stats.rollingGroups = []; // fresh streak under the new rule
+  saveStats();
+  render();
+});
+el("introDismiss").addEventListener("click", () => {
+  stats.seenIntro = true;
+  saveStats();
+  el("introTip").style.display = "none";
+});
+
+el("modeGroups").addEventListener("click", () => { practiceMode = "groups"; render(); renderPracticeIdle(); });
+el("modeWords").addEventListener("click", () => {
+  practiceMode = "words";
+  render();
+  practiceEl.innerHTML = availableWords().length > 0
+    ? `<div class="hint">Press SEND to copy a word.<br>Type the whole word as one sound-shape — not letter by letter.</div>`
+    : `<div class="hint">Not enough characters unlocked for word mode yet.<br>It'll kick in automatically as you unlock more — showing groups for now.</div>`;
+});
+
+const sessionLenSelect = el("sessionLen"), customLenInput = el("customLen");
+sessionLenSelect.addEventListener("change", () => {
+  if(sessionLenSelect.value === "custom"){
+    customLenInput.style.display = "inline-block";
+    customLenInput.focus();
+  } else {
+    customLenInput.style.display = "none";
+    sessionMinutes = Number(sessionLenSelect.value);
+    sessionStartedAt = null; sessionEnded = false;
+    el("sessionTimer").style.display = "none";
+  }
+});
+customLenInput.addEventListener("input", () => {
+  const v = Number(customLenInput.value);
+  sessionMinutes = v > 0 ? v : 0;
+  sessionStartedAt = null; sessionEnded = false;
+  el("sessionTimer").style.display = "none";
+});
+
+el("summaryContinue").addEventListener("click", () => {
+  el("summaryBanner").style.display = "none";
+  sessionStartedAt = Date.now();
+  sessionXpStart = stats.xp;
+  sessionGroupsStart = stats.lifetimeGroups;
+  sessionCorrectChars = 0; sessionTotalChars = 0;
+  sessionEnded = false;
+});
+el("summaryStop").addEventListener("click", () => {
+  el("summaryBanner").style.display = "none";
+  sessionStartedAt = null;
+  sessionLenSelect.value = "0";
+  customLenInput.style.display = "none";
+  sessionMinutes = 0;
+  el("sessionTimer").style.display = "none";
+});
+
+sessionTimerHandle = setInterval(() => {
+  updateSessionTimerUI();
+  maybeEndSession();
+}, 1000);
+
+render();
+renderPracticeIdle();
+</script>
+</body>
+</html>
