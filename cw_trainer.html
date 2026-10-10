@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keyline — CW Trainer</title>
+<style>
+  :root{
+    --panel:#1b1d19; --panel-deep:#121310; --metal:#2b2e28; --metal-light:#3e423a;
+    --amber:#ffb000; --amber-dim:rgba(255,176,0,0.22);
+    --green:#4ade80; --green-dim:rgba(74,222,128,0.16);
+    --red:#ff5c5c; --text-dim:#8b9086;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:#0a0b09; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    padding:20px;
+  }
+  .card{
+    width:100%; max-width:640px; border-radius:16px; padding:24px;
+    background:linear-gradient(160deg,var(--panel),var(--panel-deep));
+    border:1px solid var(--metal-light);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.04), 0 20px 40px rgba(0,0,0,0.5);
+  }
+  .header{display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;}
+  .title{color:var(--amber); letter-spacing:.12em; font-size:14px; font-weight:700;}
+  .subtitle{color:var(--text-dim); font-size:10px; text-transform:uppercase; letter-spacing:.08em;}
+  .rank-label{color:var(--text-dim); font-size:10px; text-transform:uppercase; text-align:right;}
+  .rank-val{color:var(--amber); font-size:13px; font-weight:700;}
+  .lcd{
+    display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:20px;
+    background:var(--panel-deep); border:1px solid var(--metal-light); border-radius:10px; padding:12px;
+  }
+  .lcd-val.icr-good{color:var(--green);}
+  .fatigue-note{
+    display:none; align-items:center; justify-content:space-between; gap:10px;
+    background:rgba(255,92,92,0.14); border:1px solid var(--red); border-radius:10px;
+    padding:10px 14px; margin-bottom:16px; font-size:11px; color:var(--red); line-height:1.5;
+  }
+  .fatigue-note button{
+    background:var(--red); color:#fff; border-radius:999px; padding:6px 12px; font-size:10px; flex-shrink:0;
+  }
+  .keyer-decoded{
+    font-size:24px; letter-spacing:.3em; color:var(--amber); min-height:30px; margin-bottom:4px;
+  }
+  .keyer-pattern{
+    font-size:13px; letter-spacing:.2em; color:var(--text-dim); min-height:18px; margin-bottom:14px;
+  }
+  .keyer-btn{
+    width:88px; height:88px; border-radius:50%; background:var(--metal); color:var(--amber);
+    border:2px solid var(--amber); font-size:13px; font-weight:800; letter-spacing:.05em;
+    user-select:none; -webkit-user-select:none; touch-action:none;
+    box-shadow:0 4px 10px rgba(0,0,0,0.3);
+  }
+  .keyer-btn.pressed{
+    background:var(--amber); color:#1a1a18; box-shadow:0 0 0 6px var(--amber-dim), inset 0 2px 6px rgba(0,0,0,0.3);
+  }
+  .keyer-hint{color:var(--text-dim); font-size:11px; margin-bottom:10px; text-align:center; line-height:1.5;}
+  .lcd-item{text-align:center;}
+  .lcd-label{color:var(--text-dim); font-size:9px; letter-spacing:.15em;}
+  .lcd-val{color:var(--amber); font-size:18px; font-weight:700; text-shadow:0 0 8px var(--amber-dim);}
+  .levelup{
+    margin-bottom:16px; border-radius:10px; padding:8px; text-align:center; font-size:13px; font-weight:700;
+    background:var(--green-dim); color:var(--green); border:1px solid var(--green); display:none;
+  }
+  .bank-label{color:var(--text-dim); font-size:10px; letter-spacing:.15em; margin-bottom:6px;}
+  .bank{display:grid; grid-template-columns:repeat(10,1fr); gap:6px; margin-bottom:20px;}
+  .cell{
+    aspect-ratio:1; border-radius:5px; display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:700; background:var(--metal); color:var(--text-dim);
+    border:1px solid var(--metal-light);
+  }
+  .cell.unlocked{background:var(--green-dim); color:var(--green); border-color:var(--green); box-shadow:0 0 6px var(--green-dim);}
+  .cell.newest{border-color:var(--amber);}
+  .practice{
+    border-radius:10px; padding:16px; margin-bottom:20px; min-height:92px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+    background:var(--panel-deep); border:1px solid var(--metal-light); text-align:center;
+  }
+  .practice .hint{color:var(--text-dim); font-size:12px;}
+  .practice .sending{color:var(--amber); font-size:14px; letter-spacing:.3em;}
+  .sending-inline{
+    color:var(--text-dim); font-size:11px; letter-spacing:.15em; text-transform:uppercase;
+    margin-bottom:4px; animation:fadeBlink 1.4s ease-in-out infinite;
+  }
+  @keyframes fadeBlink{ 0%,100%{opacity:.45;} 50%{opacity:1;} }
+  #typedInput{
+    width:100%; text-align:center; font-size:26px; letter-spacing:.4em; border-radius:6px; padding:10px;
+    background:var(--panel); color:var(--amber); border:1px solid var(--amber); outline:none;
+    font-family:inherit; text-transform:uppercase;
+  }
+  .feedback-row{display:flex; gap:8px; justify-content:center; margin-bottom:6px;}
+  .fb-char{
+    font-size:20px; font-weight:700; width:28px; height:28px; display:flex; align-items:center;
+    justify-content:center; border-radius:6px;
+  }
+  .fb-correct{color:var(--green); border:1px solid var(--green);}
+  .fb-wrong{color:var(--red); border:1px solid var(--red);}
+  .fb-note{color:var(--text-dim); font-size:11px;}
+  .controls{display:flex; align-items:center; gap:10px; margin-bottom:20px;}
+  button{
+    font-family:inherit; cursor:pointer; border:none; font-weight:700;
+  }
+  #sendBtn{
+    flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+    border-radius:999px; padding:16px; font-size:15px; font-weight:800; letter-spacing:.04em;
+    background:var(--amber); color:#1a1a18; box-shadow:0 0 0 4px var(--amber-dim), 0 6px 18px rgba(255,176,0,0.25);
+    transition:transform 80ms ease;
+  }
+  #sendBtn:active{transform:scale(0.98);}
+  #sendBtn:disabled{background:var(--metal); color:var(--text-dim); opacity:.6; cursor:default; box-shadow:none;}
+  #checkBtn{
+    border-radius:999px; padding:13px 18px; font-size:14px; background:var(--metal);
+    color:var(--green); border:1px solid var(--green); display:none;
+  }
+  #replayBtn{
+    border-radius:999px; padding:13px; background:var(--metal); color:var(--text-dim);
+    border:1px solid var(--metal-light); opacity:.4;
+  }
+  #replayBtn.active{opacity:1;}
+  .knobs{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .knob-label{color:var(--text-dim); font-size:10px; letter-spacing:.15em; margin-bottom:4px;}
+  input[type=range]{width:100%;}
+  .footer{color:var(--text-dim); font-size:10px; text-align:center; margin-top:20px;}
+  .share-note{color:var(--text-dim); font-size:10px; text-align:center; margin-top:8px; opacity:.7;}
+
+  .mode-row{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap;}
+  .mode-toggle{display:flex; gap:6px;}
+  .mode-btn{
+    padding:7px 14px; border-radius:999px; font-size:11px; letter-spacing:.08em;
+    background:var(--metal); color:var(--text-dim); border:1px solid var(--metal-light);
+  }
+  .mode-btn.active{background:var(--amber-dim); color:var(--amber); border-color:var(--amber);}
+  .mode-btn:disabled{opacity:.4; cursor:default;}
+  .session-row{display:flex; align-items:center; gap:8px; font-size:11px; color:var(--text-dim);}
+  select, .num-input{
+    font-family:inherit; background:var(--panel); color:var(--amber); border:1px solid var(--metal-light);
+    border-radius:6px; padding:5px 8px; font-size:11px;
+  }
+  .session-timer{
+    display:none; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--panel-deep); border:1px solid var(--metal-light); border-radius:8px;
+    padding:8px 12px; margin-bottom:14px; font-size:11px; color:var(--text-dim);
+  }
+  .session-timer .t{color:var(--amber); font-weight:700; font-size:13px;}
+  .summary-banner{
+    display:none; background:var(--amber-dim); border:1px solid var(--amber); border-radius:10px;
+    padding:14px; margin-bottom:16px; text-align:center;
+  }
+  .summary-banner .headline{color:var(--amber); font-weight:700; font-size:13px; margin-bottom:6px;}
+  .summary-banner .detail{color:var(--text-dim); font-size:11px; margin-bottom:10px;}
+  .summary-actions{display:flex; gap:8px; justify-content:center;}
+  .summary-actions button{
+    padding:8px 16px; border-radius:999px; font-size:11px; font-weight:700;
+  }
+  #summaryContinue{background:var(--amber); color:#1a1a18;}
+  #summaryStop{background:var(--metal); color:var(--text-dim); border:1px solid var(--metal-light);}
+  .discipline-note{color:var(--text-dim); font-size:10px; text-align:center; margin-top:6px; opacity:.6; line-height:1.5;}
+  .credits-note{color:var(--text-dim); font-size:9px; text-align:center; margin-top:14px; opacity:.45; line-height:1.6;}
+
+  .splash{
+    position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(ellipse at center, var(--panel) 0%, var(--panel-deep) 100%);
+  }
+  .splash-inner{text-align:center; max-width:360px; padding:20px;}
+  .splash-mark{
+    width:120px; height:120px; border-radius:50%; margin:0 auto 24px; display:flex;
+    align-items:center; justify-content:center; background:var(--metal); border:3px solid var(--amber);
+    box-shadow:0 0 0 8px var(--amber-dim), 0 10px 30px rgba(0,0,0,0.5); cursor:pointer;
+    transition:transform 100ms ease;
+  }
+  .splash-mark:active{transform:scale(0.96);}
+  .splash-mark .dot{width:14px; height:14px; border-radius:50%; background:var(--amber); margin:0 6px;}
+  .splash-mark .dash{width:34px; height:14px; border-radius:7px; background:var(--amber); margin:0 6px;}
+  .splash-title{color:var(--amber); font-size:22px; font-weight:800; letter-spacing:.1em; margin-bottom:8px;}
+  .splash-tagline{color:var(--text-dim); font-size:12px; line-height:1.6; margin-bottom:28px;}
+  .splash-cta{color:var(--amber); font-size:12px; font-weight:700; letter-spacing:.12em; animation:pulse 2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+
+  .fast-toggle{
+    padding:7px 12px; border-radius:999px; font-size:11px; background:var(--metal); color:var(--text-dim);
+    border:1px solid var(--metal-light);
+  }
+  .fast-toggle.active{background:var(--red); color:#fff; border-color:var(--red);}
+
+  .intro-tip{
+    background:var(--amber-dim); border:1px solid var(--amber); border-radius:10px;
+    padding:12px 14px; margin-bottom:16px; font-size:11px; color:var(--amber); line-height:1.6;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .intro-tip button{
+    background:var(--amber); color:#1a1a18; border-radius:999px; padding:6px 12px; font-size:10px; flex-shrink:0;
+  }
+  .placement-row{display:flex; justify-content:space-between; gap:8px; margin-bottom:10px; flex-wrap:wrap;}
+  #placementBtn{
+    background:var(--metal); color:var(--text-dim); border:1px solid var(--metal-light);
+    border-radius:999px; padding:6px 14px; font-size:10px; letter-spacing:.05em;
+  }
+  #scalesBtn{
+    background:var(--amber-dim); color:var(--amber); border:1px solid var(--amber);
+    border-radius:999px; padding:6px 14px; font-size:10px; letter-spacing:.05em;
+  }
+  #scalesBtn:disabled{opacity:.4; cursor:default;}
+  .plan-bar{
+    display:none; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--panel-deep); border:1px solid var(--metal-light); border-radius:8px;
+    padding:8px 12px; margin-bottom:14px; font-size:11px; color:var(--text-dim);
+  }
+  .plan-bar .status{font-weight:700;}
+  .plan-bar .status.ahead{color:var(--green);}
+  .plan-bar .status.behind{color:var(--red);}
+
+  .qrm-toggle{
+    padding:7px 12px; border-radius:999px; font-size:11px; background:var(--metal); color:var(--text-dim);
+    border:1px solid var(--metal-light);
+  }
+  .qrm-toggle.active{background:var(--red); color:#fff; border-color:var(--red);}
+  .stats-row-toggle{display:flex; margin-bottom:10px;}
+  #statsToggleBtn{
+    width:100%; padding:8px; border-radius:8px; font-size:10px; letter-spacing:.1em;
+    background:var(--panel-deep); color:var(--text-dim); border:1px solid var(--metal-light);
+  }
+  .stats-panel{
+    display:none; background:var(--panel-deep); border:1px solid var(--metal-light); border-radius:10px;
+    padding:12px; margin-bottom:16px; max-height:260px; overflow-y:auto;
+  }
+  .stats-row{display:flex; align-items:center; gap:8px; margin-bottom:6px; font-size:11px;}
+  .stats-char{width:16px; color:var(--amber); font-weight:700; flex-shrink:0;}
+  .stats-bar-track{flex:1; height:8px; border-radius:4px; background:var(--metal); overflow:hidden;}
+  .stats-bar-fill{height:100%; border-radius:4px; background:var(--green);}
+  .stats-bar-fill.weak{background:var(--red);}
+  .stats-pct{width:78px; text-align:right; color:var(--text-dim); flex-shrink:0;}
+  .heatmap-label{color:var(--text-dim); font-size:9px; letter-spacing:.1em; margin:12px 0 6px; text-transform:uppercase; opacity:.8;}
+  .heatmap{display:flex; flex-wrap:wrap; gap:3px;}
+  .heatmap-cell{width:11px; height:11px; border-radius:2px; background:var(--metal);}
+  .heatmap-cell.lvl1{background:rgba(74,222,128,0.28);}
+  .heatmap-cell.lvl2{background:rgba(74,222,128,0.5);}
+  .heatmap-cell.lvl3{background:rgba(74,222,128,0.75);}
+  .heatmap-cell.lvl4{background:var(--green);}
+
+  #converterToggleBtn{
+    width:100%; padding:8px; border-radius:8px; font-size:10px; letter-spacing:.1em;
+    background:var(--panel-deep); color:var(--text-dim); border:1px solid var(--metal-light);
+  }
+  .converter-panel{
+    display:none; background:var(--panel-deep); border:1px solid var(--metal-light); border-radius:10px;
+    padding:12px; margin-bottom:16px;
+  }
+  .converter-panel .hint2{color:var(--text-dim); font-size:10px; margin-bottom:8px; line-height:1.5;}
+  #converterInput{
+    width:100%; min-height:64px; resize:vertical; font-family:inherit; font-size:12px;
+    background:var(--panel); color:var(--amber); border:1px solid var(--metal-light);
+    border-radius:6px; padding:8px; outline:none; text-transform:uppercase; margin-bottom:8px;
+  }
+  .converter-actions{display:flex; gap:8px; flex-wrap:wrap;}
+  .converter-actions button{
+    padding:7px 14px; border-radius:999px; font-size:11px; font-weight:700;
+    background:var(--metal); color:var(--text-dim); border:1px solid var(--metal-light);
+  }
+  .converter-actions button:first-child{background:var(--amber); color:#1a1a18; border-color:var(--amber);}
+  .converter-note{color:var(--text-dim); font-size:9px; margin-top:8px; opacity:.7;}
+</style>
+</head>
+<body>
+<div class="splash" id="splash">
+  <div class="splash-inner">
+    <div class="splash-mark" id="splashMark" title="Press to start">
+      <div class="dot"></div><div class="dash"></div><div class="dot"></div>
+    </div>
+    <div class="splash-title">KEYLINE</div>
+    <div class="splash-tagline">Instant character recognition, built the way LCWO, CW Academy and Morserino-32 teach it — not a slowed-down alphabet drill.</div>
+    <div class="splash-cta">PRESS TO START</div>
+  </div>
+</div>
+<div class="card">
+  <div class="header">
+    <div>
+      <div class="title">📻 KEYLINE</div>
+      <div class="subtitle">Koch Method · Farnsworth Timing · Instant Recognition</div>
+    </div>
+    <div>
+      <div class="rank-label">Rank</div>
+      <div class="rank-val" id="rankVal">Spark Gap</div>
+    </div>
+  </div>
+
+  <div class="lcd">
+    <div class="lcd-item"><div class="lcd-label">LEVEL</div><div class="lcd-val" id="lvlVal">2/39</div></div>
+    <div class="lcd-item"><div class="lcd-label">STREAK</div><div class="lcd-val" id="streakVal">🔥0</div></div>
+    <div class="lcd-item"><div class="lcd-label">XP</div><div class="lcd-val" id="xpVal">⚡0</div></div>
+    <div class="lcd-item"><div class="lcd-label">ACCURACY</div><div class="lcd-val" id="accVal">—</div></div>
+    <div class="lcd-item"><div class="lcd-label">ICR</div><div class="lcd-val" id="icrVal" title="Avg. time to recognize + type each character. Nancy Kott's ICR benchmark: ~500ms counts as instant.">—</div></div>
+  </div>
+
+  <div class="fatigue-note" id="fatigueNote">
+    <span>Accuracy just dropped from where it was this session — per CWops' guidance, that's fatigue, not failure. Worth stopping here rather than pushing through.</span>
+    <button id="fatigueDismiss">OK</button>
+  </div>
+
+  <div class="levelup" id="levelUpBanner"></div>
+
+  <div class="intro-tip" id="introTip">
+    <span>New here: hit SEND, listen, type the letters you heard, hit CHECK. That's the whole loop — repeat it.</span>
+    <button id="introDismiss">GOT IT</button>
+  </div>
+
+  <div class="placement-row">
+    <button id="scalesBtn" title="Run through every character you've unlocked, once — do this before new material each session">▶ DAILY SCALES</button>
+    <button id="placementBtn">ALREADY KNOW MORSE? TAKE PLACEMENT TEST</button>
+  </div>
+
+  <div class="plan-bar" id="planBar">
+    <span id="planText">—</span>
+    <span class="status" id="planStatus"></span>
+  </div>
+
+  <div class="bank-label">CHARACTER BANK</div>
+  <div class="bank" id="bank"></div>
+
+  <div class="stats-row-toggle">
+    <button id="statsToggleBtn" title="Per-character accuracy, weakest first — same weighting the practice generator already uses">📊 CHARACTER STATS</button>
+  </div>
+  <div class="stats-panel" id="statsPanel"></div>
+
+  <div class="stats-row-toggle">
+    <button id="converterToggleBtn" title="Type or paste any text and hear it in Morse — LCWO's text-to-CW converter, no login needed">🔤 TEXT → CW CONVERTER</button>
+  </div>
+  <div class="converter-panel" id="converterPanel">
+    <div class="hint2">Not training — just a utility. Type or paste anything and hear it as Morse at the speed/tone set below, or download it as a WAV file to practice offline.</div>
+    <textarea id="converterInput" placeholder="TYPE OR PASTE TEXT HERE"></textarea>
+    <div class="converter-actions">
+      <button id="converterPlay">▶ PLAY</button>
+      <button id="converterDownload">⇩ DOWNLOAD WAV</button>
+    </div>
+    <div class="converter-note" id="converterNote"></div>
+  </div>
+
+  <div class="mode-row">
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="modeGroups">GROUPS</button>
+      <button class="mode-btn" id="modeWords">WORDS</button>
+      <button class="mode-btn" id="modeCallsigns" title="Synthetic practice callsigns — real prefix patterns, not real operators">CALLSIGNS</button>
+      <button class="mode-btn" id="modeQso" title="A short CW Academy-style QSO exchange — the real shape of an on-air contact">QSO</button>
+      <button class="mode-btn" id="modeText" title="Real running sentences — LCWO's plain-text training. Unlocks once you're at (or near) full copy.">TEXT</button>
+      <button class="mode-btn" id="modeEcho" title="Hear it, then key it back yourself — Morserino-32's Echo Trainer, adapted here">ECHO (SEND)</button>
+      <button class="fast-toggle" id="fastToggle" title="Loosens the unlock requirement — for relearners, not first-timers">FAST UNLOCK: OFF</button>
+      <button class="qrm-toggle" id="qrmToggle" title="Mixes faint band noise under the tone — LCWO's 'add noise' option, for practicing under real conditions">QRM: OFF</button>
+    </div>
+    <div class="session-row">
+      SESSION:
+      <select id="sessionLen">
+        <option value="0">No limit</option>
+        <option value="5">5 min</option>
+        <option value="10">10 min</option>
+        <option value="15">15 min</option>
+        <option value="20">20 min</option>
+        <option value="25">25 min</option>
+        <option value="30">30 min</option>
+        <option value="45">45 min</option>
+        <option value="60">60 min</option>
+        <option value="custom">Custom…</option>
+      </select>
+      <input type="number" id="customLen" class="num-input" placeholder="min" min="1" style="display:none; width:56px;">
+    </div>
+  </div>
+
+  <div class="session-timer" id="sessionTimer">
+    <span>Session in progress</span>
+    <span class="t" id="sessionTimeLeft">00:00</span>
+  </div>
+
+  <div class="summary-banner" id="summaryBanner">
+    <div class="headline" id="summaryHeadline">Session complete</div>
+    <div class="detail" id="summaryDetail"></div>
+    <div class="summary-actions">
+      <button id="summaryContinue">KEEP GOING</button>
+      <button id="summaryStop">STOP HERE</button>
+    </div>
+  </div>
+
+  <div class="practice" id="practice">
+    <div class="hint">Press SEND to copy a 5-character group.<br>Type what you hear — don't peek, just listen.</div>
+  </div>
+
+  <div class="controls">
+    <button id="sendBtn">▶ SEND</button>
+    <button id="checkBtn">CHECK</button>
+    <button id="replayBtn" title="Replay this group">↺</button>
+  </div>
+
+  <div class="knobs">
+    <div>
+      <div class="knob-label" id="charWpmLabel">CHARACTER SPEED — 20 WPM</div>
+      <input type="range" id="charWpm" min="15" max="25" value="20">
+    </div>
+    <div>
+      <div class="knob-label" id="effWpmLabel">EFFECTIVE SPEED — 10 WPM</div>
+      <input type="range" id="effWpm" min="5" max="20" value="10">
+    </div>
+    <div>
+      <div class="knob-label" id="toneHzLabel">TONE PITCH — 600 HZ</div>
+      <input type="range" id="toneHz" min="400" max="1000" step="10" value="600">
+    </div>
+  </div>
+
+  <div class="footer" id="footerStats">0 groups today · 0 lifetime · best streak 0d</div>
+  <div class="share-note">Runs 100% offline — no internet, no server. Send this file to anyone; progress is saved per-browser.</div>
+  <div class="discipline-note">Copy by ear only — no dot-dash chart while training. Once you're past ~15 characters, try letting 1-2 letters lag behind what's playing before you write them; that's how real head-copy works.</div>
+  <div class="credits-note">Keyline is an independent trainer. Its method follows the Koch method and published practice guidance from LCWO.net and CW Academy (CWops) — including LCWO-style tone/noise controls, character statistics, and QSO practice — and its Echo mode is modeled on Morserino-32's Echo Trainer. Keyline is not affiliated with, endorsed by, or a product of any of them.</div>
+</div>
+
+<script>
+const MORSE = {
+  A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",J:".---",
+  K:"-.-",L:".-..",M:"--",N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",
+  U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--..",
+  0:"-----",1:".----",2:"..---",3:"...--",4:"....-",5:".....",6:"-....",7:"--...",8:"---..",9:"----.",
+  ".":".-.-.-",",":"--..--","?":"..--..","/":"-..-."
+};
+const KOCH_ORDER = ["K","M","R","S","U","A","P","T","L","O","W","I",".","N","J","E","F","0",
+  "Y",",","V","G","5","/","Q","9","Z","H","3","8","B","?","4","2","7","C","1","D","6","X"];
+// Standard Koch sequence as popularized by LCWO.net — confirmed 2026-10: this app previously
+// had U before R, which didn't match the real sequence.
+const RANKS = [
+  {min:0,name:"Spark Gap"},{min:6,name:"Crystal Set"},{min:12,name:"Regen Receiver"},
+  {min:20,name:"Superheterodyne"},{min:30,name:"Elmer"},{min:39,name:"Full Copy"}
+];
+const WORDS = [
+  // Common short English words — build the "whole word as one sound-shape" habit
+  "THE","AND","YOU","ARE","FOR","NOT","BUT","ALL","CAN","HER","WAS","ONE","OUR","OUT","DAY",
+  "GET","HAS","HIM","HIS","HOW","MAN","NEW","NOW","OLD","SEE","TWO","WAY","WHO","BOY","DID",
+  "ITS","LET","PUT","SAY","SHE","TOO","USE","DOG","CAT","SUN","RUN","BIG","RED","TEN","YES",
+  "YET","WHY","TRY","ASK","TIME","YEAR","WORK","LIFE","HAND","PART","PLACE","WEEK","GOOD",
+  // Real CW/ham Q-codes and abbreviations — what an actual QSO sounds like (per LCWO/CW Academy)
+  "DE","TU","ES","OM","YL","HI","AGN","BK","CPY","FB","GM","GA","GE","GN","HW","PSE","RPT",
+  "UR","WX","CUL","CUAGN","RIG","ANT","PWR","NAME","QTH","QRZ","QRM","QRN","QRQ","QRS","QRT",
+  "QRV","QSB","QSL","QSO","QSY","RST","HAM","NET","CALL","RADIO","POWER","SIGNAL",
+  "THANKS","73","88","599","5NN"
+];
+// Plain/running-text practice — LCWO's "text training" mode, built from real sentences rather
+// than isolated words. Gated to characters you've actually unlocked, same as words/callsigns,
+// so in practice this only becomes available once you're near full copy — which matches the
+// "real text after the alphabet is done" guidance this app already follows for QSO mode.
+const TEXTS = [
+  "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG",
+  "CQ CQ CQ DE STATION CALLING ANYONE PLEASE COME BACK",
+  "FIVE NINE IS A PERFECT COPY ON YOUR SIGNAL TONIGHT",
+  "PRACTICE A LITTLE EVERY DAY AND YOUR SPEED WILL FOLLOW",
+  "THE RAIN IN SPAIN FALLS MAINLY ON THE PLAIN",
+  "A GOOD OPERATOR LISTENS MORE THAN HE SENDS",
+  "WEATHER HERE IS CLEAR AND BAND CONDITIONS ARE GOOD",
+  "MANY HANDS MAKE LIGHT WORK",
+  "HASTE MAKES WASTE SO COPY WHAT YOU HEAR NOT WHAT YOU GUESS",
+  "THIS IS A TEST OF YOUR COPYING ABILITY AT THIS SPEED",
+  "KNOWLEDGE IS POWER BUT PRACTICE IS MASTERY",
+  "THE EARLY BIRD CATCHES THE WORM",
+  "RIG HERE IS RUNNING LOW POWER INTO A SIMPLE WIRE ANTENNA",
+  "ACTIONS SPEAK LOUDER THAN WORDS",
+  "COPY NOW CONTINUES AS ONE LONG STREAM OF REAL TEXT",
+  "THANKS FOR THE QSO HOPE TO WORK YOU AGAIN SOON BEST SEVENTY THREE"
+];
+const STORAGE_KEY = "cw-trainer-progress";
+const DEFAULT_STATS = {
+  unlockedCount:2, xp:0, streakDays:0, bestStreak:0, lastPracticeDate:null,
+  groupsCompletedToday:0, lifetimeGroups:0, charStats:{}, rollingGroups:[],
+  firstPracticeDate:null, seenIntro:false, fastUnlock:false,
+  reactionMsSum:0, reactionCount:0, dailyLog:{}
+  // dailyLog: {"YYYY-MM-DD": charsPracticedThatDay} — powers the activity heatmap, LCWO-style.
+};
+// Instant Character Recognition benchmark, per Nancy Kott's ICR paper (CWops): a character
+// counts as "instant" only if recognized within about half a second of hearing it end.
+// We approximate this with time-to-submit per character, which also includes typing time,
+// so it's a relative/improving metric more than a pure reaction-time measurement.
+const ICR_TARGET_MS = 500;
+
+let stats = loadStats();
+let charWpm = 20, effWpm = 10;
+let sessionState = "idle"; // idle | playing | input | feedback
+let audioPlaying = false; // true only while the character/group's sound is actually sounding —
+// separate from sessionState so the answer box can appear and take input the instant SEND is
+// pressed, rather than waiting for the audio to finish. (Echo/keying mode is the exception:
+// it still waits for playback to end, since you're meant to key back what you just heard, not
+// race it.)
+let currentGroup = "";
+let audioCtx = null;
+let practiceMode = "groups"; // groups | words | callsigns | qso | text | echo
+let toneHz = 600; // sidetone pitch — LCWO lets you set this too, default matches a typical CW rig sidetone
+let qrmEnabled = false; // LCWO's "add noise" option — faint band noise mixed under the tone
+
+// Echo Trainer (sending) state — modeled on Morserino-32's Echo Trainer: hear a character
+// or short group, then key it back on the spacebar or the on-screen button. A press is
+// classified dot/dash by its duration against the character-speed dit length; the gap
+// before the next press decides whether it's still the same letter or a new one.
+let echoKeyerActive = false;
+let echoSymbolBuffer = ""; // "." / "-" accumulating for the character currently being keyed
+let echoDecoded = "";      // finalized decoded characters for this rep
+let echoKeyDownAt = null;
+let echoLastReleaseAt = null;
+let echoFinalizeTimer = null;
+let isScales = false; // true while a "Daily Scales" warm-up rep is in flight
+let inputShownAt = null; // timestamp when the input box appeared, for response-time tracking
+let recentAccHistory = []; // this session's group accuracies, for fatigue detection (not persisted)
+let fatigueWarned = false; // show the fatigue nudge once per session, not every group
+let highAccStreakAtSpeed = 0; // consecutive strong groups at the current effective WPM
+
+// session timer state
+let sessionMinutes = 0; // 0 = no limit
+let sessionStartedAt = null;
+let sessionXpStart = 0;
+let sessionGroupsStart = 0;
+let sessionCorrectChars = 0;
+let sessionTotalChars = 0;
+let sessionTimerHandle = null;
+let sessionEnded = false;
+
+// placement test state
+let placementActive = false;
+let placementIndex = 0;
+let placementLastGood = -1;
+let placementCorrect = 0;
+let placementTotal = 0;
+let placementConsecWrong = 0;
+
+function loadStats(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return {...DEFAULT_STATS, ...JSON.parse(raw)};
+  }catch(e){}
+  return {...DEFAULT_STATS};
+}
+function saveStats(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(stats)); }catch(e){}
+}
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function getRank(count){
+  let r = RANKS[0].name;
+  for(const rank of RANKS) if(count >= rank.min) r = rank.name;
+  return r;
+}
+function computeTiming(cWpm, eWpm){
+  const dit = 1.2/cWpm;
+  if(eWpm >= cWpm) return {dit, dash:dit*3, intraGap:dit, charGap:dit*3, wordGap:dit*7};
+  const wordSecEff = 60/eWpm;
+  const contentSec = 31*dit;
+  const spaceSec = Math.max(wordSecEff - contentSec, 19*dit);
+  const unitSpace = spaceSec/19;
+  return {dit, dash:dit*3, intraGap:dit, charGap:unitSpace*3, wordGap:unitSpace*7};
+}
+function unlockedChars(){ return KOCH_ORDER.slice(0, stats.unlockedCount); }
+function generateGroup(size){
+  size = size || 5;
+  const chars = unlockedChars();
+  const newest = chars[chars.length-1];
+  // Weight: base weight 1 for every unlocked char, +2 for the newest (still fresh),
+  // and up to +9 more for chars with low accuracy so far (min 6 reps before penalizing,
+  // so a char isn't over-weighted from one unlucky early miss).
+  const pool = [];
+  chars.forEach(c => {
+    let weight = 1;
+    if(c === newest) weight += 2;
+    const s = stats.charStats[c];
+    if(s && s.total >= 6){
+      const acc = s.correct / s.total;
+      if(acc < 0.9) weight += Math.round((0.9 - acc) * 10);
+    }
+    for(let i=0;i<weight;i++) pool.push(c);
+  });
+  let g = "";
+  for(let i=0;i<size;i++) g += pool[Math.floor(Math.random()*pool.length)];
+  return g;
+}
+
+function availableWords(){
+  const chars = new Set(unlockedChars());
+  return WORDS.filter(w => w.split("").every(c => chars.has(c)));
+}
+function availableTexts(){
+  const chars = new Set(unlockedChars());
+  return TEXTS.filter(t => t.split("").every(c => c === " " || chars.has(c)));
+}
+
+// Synthetic practice callsigns — real-world prefix patterns (US, India, UK, Japan, Germany),
+// randomly generated. Never claims to be a real operator's callsign.
+function randomCallsign(){
+  const digit = () => String(Math.floor(Math.random()*10));
+  const letters = (n) => {
+    let s = "";
+    for(let i=0;i<n;i++) s += String.fromCharCode(65 + Math.floor(Math.random()*26));
+    return s;
+  };
+  const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+  const patterns = [
+    () => pick(["W","K","N"]) + digit() + letters(1 + Math.floor(Math.random()*3)),       // US-style
+    () => "VU" + pick(["2","3"]) + letters(2 + Math.floor(Math.random()*2)),              // India
+    () => pick(["G","M"]) + digit() + letters(2 + Math.floor(Math.random()*2)),           // UK
+    () => pick(["JA","JH"]) + digit() + letters(2 + Math.floor(Math.random()*2)),         // Japan
+    () => pick(["DL","DJ","DK"]) + digit() + letters(1 + Math.floor(Math.random()*3)),    // Germany
+  ];
+  return pick(patterns)();
+}
+function availableCallsignPossible(){
+  const chars = new Set(unlockedChars());
+  for(let i=0;i<60;i++){
+    const cs = randomCallsign();
+    if(cs.split("").every(c => chars.has(c))) return true;
+  }
+  return false;
+}
+function generateCallsign(){
+  const chars = new Set(unlockedChars());
+  for(let i=0;i<60;i++){
+    const cs = randomCallsign();
+    if(cs.split("").every(c => chars.has(c))) return cs;
+  }
+  return null;
+}
+
+// QSO trainer — a short, realistic CW Academy-style exchange skeleton (the Q-codes and
+// abbreviations themselves, same vocabulary LCWO's abbreviations trainer drills), built
+// only from characters already unlocked so it gates itself the same way callsigns do.
+function generateQso(){
+  const chars = new Set(unlockedChars());
+  const has = w => w.split("").every(c => chars.has(c));
+  const needed = ["DE","UR","RST","HW","CPY"];
+  if(!needed.every(has)) return null;
+  const cs1 = generateCallsign(), cs2 = generateCallsign();
+  if(!cs1 || !cs2) return null;
+  const rstOk = ["599","579","559","459","339"].filter(has);
+  if(rstOk.length === 0) return null;
+  const greet = ["GM","GA","GE","GN"].filter(has);
+  const closer = ["TU","73","GN"].filter(has);
+  const rst = rstOk[Math.floor(Math.random()*rstOk.length)];
+  const parts = [cs2, "DE", cs1];
+  if(greet.length) parts.push(greet[Math.floor(Math.random()*greet.length)]);
+  parts.push("UR","RST",rst,"HW","CPY");
+  if(closer.length) parts.push(closer[Math.floor(Math.random()*closer.length)]);
+  return parts.join(" ");
+}
+function availableQsoPossible(){ return generateQso() !== null; }
+
+function generateItem(){
+  if(isScales) return unlockedChars().join("");
+  if(practiceMode === "words"){
+    const avail = availableWords();
+    if(avail.length > 0) return avail[Math.floor(Math.random()*avail.length)];
+  }
+  if(practiceMode === "callsigns"){
+    const cs = generateCallsign();
+    if(cs) return cs;
+  }
+  if(practiceMode === "qso"){
+    const q = generateQso();
+    if(q) return q;
+  }
+  if(practiceMode === "text"){
+    const avail = availableTexts();
+    if(avail.length > 0) return avail[Math.floor(Math.random()*avail.length)];
+  }
+  if(practiceMode === "echo") return generateGroup(3); // shorter rep — keying back is harder than typing
+  return generateGroup(5);
+}
+
+// ---- Echo Trainer (sending/keying) ----
+function echoUnitMs(){ return (1.2 / charWpm) * 1000; } // one dit, in ms, at the current character speed
+function decodeMorsePattern(pattern){
+  for(const ch in MORSE){ if(MORSE[ch] === pattern) return ch; }
+  return "?";
+}
+function finalizeEchoChar(){
+  if(!echoSymbolBuffer) return;
+  echoDecoded += decodeMorsePattern(echoSymbolBuffer);
+  echoSymbolBuffer = "";
+  renderEchoReadout();
+}
+function echoKeyDown(e){
+  if(e && e.cancelable) e.preventDefault();
+  if(!echoKeyerActive || echoKeyDownAt) return;
+  if(echoLastReleaseAt && (Date.now() - echoLastReleaseAt) >= echoUnitMs()*2){
+    finalizeEchoChar();
+  }
+  clearTimeout(echoFinalizeTimer);
+  echoKeyDownAt = Date.now();
+  const btn = el("keyerBtn"); if(btn) btn.classList.add("pressed");
+}
+function echoKeyUp(e){
+  if(e && e.cancelable) e.preventDefault();
+  if(!echoKeyerActive || !echoKeyDownAt) return;
+  const pressMs = Date.now() - echoKeyDownAt;
+  echoSymbolBuffer += (pressMs < echoUnitMs()*2 ? "." : "-");
+  echoKeyDownAt = null;
+  echoLastReleaseAt = Date.now();
+  const btn = el("keyerBtn"); if(btn) btn.classList.remove("pressed");
+  renderEchoReadout();
+  clearTimeout(echoFinalizeTimer);
+  echoFinalizeTimer = setTimeout(finalizeEchoChar, echoUnitMs()*5 + 150);
+}
+function renderEchoReadout(){
+  const pat = el("keyerPattern");
+  if(pat) pat.textContent = echoSymbolBuffer.replace(/\./g,"•").replace(/-/g,"–") || "listening for your key…";
+  const dec = el("keyerDecoded");
+  if(dec) dec.textContent = echoDecoded || " ";
+}
+document.addEventListener("keydown", e => {
+  if(e.code === "Space" && echoKeyerActive && !e.repeat) echoKeyDown(e);
+});
+document.addEventListener("keyup", e => {
+  if(e.code === "Space" && echoKeyerActive) echoKeyUp(e);
+});
+
+// LCWO's "add noise" option, approximated: a buffer of white noise band-passed around the
+// sidetone frequency, mixed in well under the tone's volume — enough to simulate a noisy
+// band without masking the character, since the point is resilience, not guesswork.
+function createNoiseBuffer(ctx, durationSec){
+  const len = Math.max(1, Math.floor(ctx.sampleRate * durationSec));
+  const buffer = ctx.createBuffer(1, len, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for(let i=0;i<len;i++) data[i] = Math.random()*2-1;
+  return buffer;
+}
+
+function playGroup(text){
+  return new Promise((resolve) => {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const start = () => {
+      const timing = computeTiming(charWpm, effWpm);
+      const startTime = audioCtx.currentTime + 0.15;
+      let t = startTime;
+      text.split("").forEach(ch => {
+        if(ch === " "){ t += timing.wordGap; return; }
+        const pattern = MORSE[ch];
+        if(!pattern) return;
+        pattern.split("").forEach(sym => {
+          const dur = sym === "." ? timing.dit : timing.dash;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.frequency.value = toneHz; osc.type = "sine";
+          gain.gain.setValueAtTime(0, t);
+          gain.gain.linearRampToValueAtTime(0.3, t+0.005);
+          gain.gain.setValueAtTime(0.3, Math.max(t+dur-0.005, t+0.006));
+          gain.gain.linearRampToValueAtTime(0, t+dur);
+          osc.connect(gain).connect(audioCtx.destination);
+          osc.start(t); osc.stop(t+dur+0.01);
+          t += dur + timing.intraGap;
+        });
+        t = t - timing.intraGap + timing.charGap;
+      });
+      if(qrmEnabled && t > startTime){
+        const noiseSrc = audioCtx.createBufferSource();
+        noiseSrc.buffer = createNoiseBuffer(audioCtx, t - startTime);
+        const noiseFilter = audioCtx.createBiquadFilter();
+        noiseFilter.type = "bandpass"; noiseFilter.frequency.value = toneHz; noiseFilter.Q.value = 0.6;
+        const noiseGain = audioCtx.createGain();
+        noiseGain.gain.value = 0.045;
+        noiseSrc.connect(noiseFilter).connect(noiseGain).connect(audioCtx.destination);
+        noiseSrc.start(startTime); noiseSrc.stop(t);
+      }
+      const totalMs = (t - audioCtx.currentTime) * 1000;
+      resolve(totalMs);
+    };
+    if(audioCtx.state === "suspended") audioCtx.resume().then(start); else start();
+  });
+}
+
+// ---- Text → CW converter — LCWO's standalone text-to-CW tool, no login/account needed.
+// Plays (or renders to a downloadable WAV) ANY typed/pasted text, not just unlocked
+// characters — it's a utility, not a training mode, so it isn't gated the way practice is.
+let converterBusy = false;
+function sanitizeForMorse(text){
+  return text.toUpperCase().split("").filter(c => c === " " || MORSE[c]).join("");
+}
+// Shared scheduling logic for both live playback and offline WAV rendering — works against
+// either a real AudioContext (destination = audioCtx.destination) or an OfflineAudioContext
+// (destination = offlineCtx.destination), since both expose the same oscillator/gain API.
+function scheduleMorseAudio(ctx, text, destination, startAt){
+  const timing = computeTiming(charWpm, effWpm);
+  let t = startAt;
+  text.split("").forEach(ch => {
+    if(ch === " "){ t += timing.wordGap; return; }
+    const pattern = MORSE[ch];
+    if(!pattern) return;
+    pattern.split("").forEach(sym => {
+      const dur = sym === "." ? timing.dit : timing.dash;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.value = toneHz; osc.type = "sine";
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.3, t+0.005);
+      gain.gain.setValueAtTime(0.3, Math.max(t+dur-0.005, t+0.006));
+      gain.gain.linearRampToValueAtTime(0, t+dur);
+      osc.connect(gain).connect(destination);
+      osc.start(t); osc.stop(t+dur+0.01);
+      t += dur + timing.intraGap;
+    });
+    t = t - timing.intraGap + timing.charGap;
+  });
+  return t; // end time, in the same clock as startAt
+}
+function playArbitraryText(text){
+  const clean = sanitizeForMorse((text || "").trim());
+  const note = el("converterNote");
+  if(!clean){ note.textContent = "Nothing to play — type some text first."; return; }
+  if(converterBusy) return;
+  audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+  const start = () => {
+    converterBusy = true;
+    const startAt = audioCtx.currentTime + 0.15;
+    const endAt = scheduleMorseAudio(audioCtx, clean, audioCtx.destination, startAt);
+    const totalMs = (endAt - audioCtx.currentTime) * 1000;
+    note.textContent = "Sending…";
+    setTimeout(() => { converterBusy = false; note.textContent = ""; }, totalMs);
+  };
+  if(audioCtx.state === "suspended") audioCtx.resume().then(start); else start();
+}
+// Minimal 16-bit PCM WAV encoder — a single-channel clip doesn't need a library for this.
+function writeWavBlob(audioBuffer){
+  const numCh = audioBuffer.numberOfChannels;
+  const sampleRate = audioBuffer.sampleRate;
+  const length = audioBuffer.length * numCh * 2 + 44;
+  const buffer = new ArrayBuffer(length);
+  const view = new DataView(buffer);
+  const writeStr = (offset, str) => { for(let i=0;i<str.length;i++) view.setUint8(offset+i, str.charCodeAt(i)); };
+  writeStr(0, "RIFF"); view.setUint32(4, length-8, true); writeStr(8, "WAVE");
+  writeStr(12, "fmt "); view.setUint32(16, 16, true); view.setUint16(20, 1, true);
+  view.setUint16(22, numCh, true); view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate*numCh*2, true); view.setUint16(32, numCh*2, true); view.setUint16(34, 16, true);
+  writeStr(36, "data"); view.setUint32(40, audioBuffer.length*numCh*2, true);
+  let offset = 44;
+  const channels = [];
+  for(let c=0;c<numCh;c++) channels.push(audioBuffer.getChannelData(c));
+  for(let i=0;i<audioBuffer.length;i++){
+    for(let c=0;c<numCh;c++){
+      const s = Math.max(-1, Math.min(1, channels[c][i]));
+      view.setInt16(offset, s < 0 ? s*0x8000 : s*0x7FFF, true);
+      offset += 2;
+    }
+  }
+  return new Blob([buffer], {type: "audio/wav"});
+}
+async function downloadConverterWav(text){
+  const clean = sanitizeForMorse((text || "").trim());
+  const note = el("converterNote");
+  if(!clean){ note.textContent = "Nothing to render — type some text first."; return; }
+  const timing = computeTiming(charWpm, effWpm);
+  const estSec = clean.length * (timing.dash*4 + timing.charGap) + 2; // generous padding
+  const OfflineCtor = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  const offlineCtx = new OfflineCtor(1, Math.ceil(estSec*44100), 44100);
+  scheduleMorseAudio(offlineCtx, clean, offlineCtx.destination, 0.15);
+  note.textContent = "Rendering…";
+  try{
+    const rendered = await offlineCtx.startRendering();
+    const blob = writeWavBlob(rendered);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "keyline-cw.wav";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    note.textContent = "Downloaded.";
+  }catch(e){
+    note.textContent = "Couldn't render audio for download.";
+  }
+}
+
+// ---- DOM refs ----
+const el = id => document.getElementById(id);
+const sendBtn = el("sendBtn"), checkBtn = el("checkBtn"), replayBtn = el("replayBtn");
+const practiceEl = el("practice");
+const charWpmSlider = el("charWpm"), effWpmSlider = el("effWpm");
+
+function render(){
+  el("rankVal").textContent = getRank(stats.unlockedCount);
+  el("lvlVal").textContent = `${stats.unlockedCount}/${KOCH_ORDER.length}`;
+  el("streakVal").textContent = `🔥${stats.streakDays}`;
+  el("xpVal").textContent = `⚡${stats.xp}`;
+  const totals = Object.values(stats.charStats).reduce((a,c)=>({correct:a.correct+c.correct,total:a.total+c.total}),{correct:0,total:0});
+  el("accVal").textContent = totals.total ? Math.round(totals.correct/totals.total*100)+"%" : "—";
+  const icrEl = el("icrVal");
+  if(stats.reactionCount > 0){
+    const avgMs = Math.round(stats.reactionMsSum / stats.reactionCount);
+    icrEl.textContent = avgMs + "ms";
+    icrEl.classList.toggle("icr-good", avgMs <= ICR_TARGET_MS);
+  } else {
+    icrEl.textContent = "—";
+    icrEl.classList.remove("icr-good");
+  }
+  el("footerStats").textContent = `${stats.groupsCompletedToday} groups today · ${stats.lifetimeGroups} lifetime · best streak ${stats.bestStreak}d`;
+  el("charWpmLabel").textContent = `CHARACTER SPEED — ${charWpm} WPM`;
+  el("effWpmLabel").textContent = `EFFECTIVE SPEED — ${effWpm} WPM`;
+  el("toneHzLabel").textContent = `TONE PITCH — ${toneHz} HZ`;
+
+  const bank = el("bank");
+  bank.innerHTML = "";
+  KOCH_ORDER.forEach((c,i) => {
+    const div = document.createElement("div");
+    const unlocked = i < stats.unlockedCount;
+    const newest = i === stats.unlockedCount - 1;
+    div.className = "cell" + (unlocked ? " unlocked" : "") + (newest ? " newest" : "");
+    div.textContent = c;
+    bank.appendChild(div);
+  });
+
+  charWpmSlider.disabled = sessionState !== "idle";
+  effWpmSlider.disabled = sessionState !== "idle";
+  sendBtn.disabled = audioPlaying || sessionState === "input";
+  replayBtn.classList.toggle("active", !!currentGroup && !audioPlaying && sessionState !== "playing");
+  checkBtn.style.display = sessionState === "input" ? "inline-block" : "none";
+  checkBtn.textContent = (practiceMode === "echo" && sessionState === "input") ? "DONE KEYING" : "CHECK";
+  sendBtn.textContent = audioPlaying ? "▶ SENDING…" : sessionState === "feedback" ? "▶ NEXT GROUP" : sessionState === "idle" ? "▶ SEND" : "▶ SEND";
+
+  const modeLocked = sessionState === "playing" || sessionState === "input" || placementActive;
+  el("modeGroups").disabled = modeLocked;
+  el("modeWords").disabled = modeLocked;
+  el("modeCallsigns").disabled = modeLocked;
+  el("modeQso").disabled = modeLocked;
+  el("modeText").disabled = modeLocked;
+  el("modeEcho").disabled = modeLocked;
+  el("modeGroups").classList.toggle("active", practiceMode === "groups");
+  el("modeWords").classList.toggle("active", practiceMode === "words");
+  el("modeCallsigns").classList.toggle("active", practiceMode === "callsigns");
+  el("modeQso").classList.toggle("active", practiceMode === "qso");
+  el("modeText").classList.toggle("active", practiceMode === "text");
+  el("modeEcho").classList.toggle("active", practiceMode === "echo");
+  el("scalesBtn").disabled = modeLocked || unlockedChars().length < 2;
+
+  const fastBtn = el("fastToggle");
+  fastBtn.textContent = `FAST UNLOCK: ${stats.fastUnlock ? "ON" : "OFF"}`;
+  fastBtn.classList.toggle("active", stats.fastUnlock);
+
+  const qrmBtn = el("qrmToggle");
+  qrmBtn.textContent = `QRM: ${qrmEnabled ? "ON" : "OFF"}`;
+  qrmBtn.classList.toggle("active", qrmEnabled);
+
+  renderPlanBar();
+  renderStatsPanel();
+  el("introTip").style.display = stats.seenIntro ? "none" : "flex";
+}
+
+// Per-character accuracy, weakest first — the same signal generateGroup() already weights
+// practice by, made visible. Mirrors LCWO's statistics page.
+function renderStatsPanel(){
+  const panel = el("statsPanel");
+  if(panel.style.display !== "block") return;
+  const rows = unlockedChars().map(c => {
+    const s = stats.charStats[c] || {correct:0,total:0};
+    const acc = s.total ? s.correct/s.total : null;
+    return {c, acc, total:s.total};
+  }).sort((a,b) => {
+    if(a.acc === null && b.acc === null) return 0;
+    if(a.acc === null) return -1;
+    if(b.acc === null) return 1;
+    return a.acc - b.acc;
+  });
+  panel.innerHTML = rows.map(({c,acc,total}) => {
+    const pct = acc === null ? 0 : Math.round(acc*100);
+    const label = acc === null ? "no reps yet" : `${pct}% (${total})`;
+    return `<div class="stats-row">
+      <span class="stats-char">${c}</span>
+      <span class="stats-bar-track"><span class="stats-bar-fill ${acc !== null && acc < 0.9 ? 'weak' : ''}" style="width:${pct}%"></span></span>
+      <span class="stats-pct">${label}</span>
+    </div>`;
+  }).join("");
+  panel.innerHTML += renderHeatmap();
+}
+
+// Activity heatmap — LCWO's main-page practice calendar, condensed: the last 70 days as
+// colored cells, darkest for no practice up through brightest for a heavy day. Level
+// thresholds are in characters copied (dailyLog counts chars, not groups, so word/QSO/text
+// mode reps count proportionally to their length).
+function renderHeatmap(){
+  const days = 70;
+  const today = new Date(todayStr());
+  let cells = "";
+  for(let i = days - 1; i >= 0; i--){
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0,10);
+    const count = stats.dailyLog[key] || 0;
+    let lvl = 0;
+    if(count >= 150) lvl = 4;
+    else if(count >= 75) lvl = 3;
+    else if(count >= 25) lvl = 2;
+    else if(count > 0) lvl = 1;
+    cells += `<div class="heatmap-cell ${lvl ? 'lvl'+lvl : ''}" title="${key}: ${count} characters"></div>`;
+  }
+  return `<div class="heatmap-label">ACTIVITY — LAST 70 DAYS</div><div class="heatmap">${cells}</div>`;
+}
+
+function renderPlanBar(){
+  const bar = el("planBar");
+  if(!stats.firstPracticeDate){ bar.style.display = "none"; return; }
+  bar.style.display = "flex";
+  const daysElapsed = Math.floor((new Date(todayStr()) - new Date(stats.firstPracticeDate)) / 86400000) + 1;
+  const day = Math.min(daysElapsed, 7);
+  const target = Math.min(KOCH_ORDER.length, Math.round(day / 7 * KOCH_ORDER.length));
+  const statusEl = el("planStatus");
+  if(daysElapsed > 7){
+    el("planText").textContent = `Past day 7 · ${stats.unlockedCount}/${KOCH_ORDER.length} characters`;
+    statusEl.textContent = stats.unlockedCount >= KOCH_ORDER.length ? "COMPLETE" : "FINISH LINE";
+    statusEl.className = "status " + (stats.unlockedCount >= KOCH_ORDER.length ? "ahead" : "behind");
+  } else {
+    el("planText").textContent = `Day ${daysElapsed} of 7 · target ${target} chars · you have ${stats.unlockedCount}`;
+    const onPace = stats.unlockedCount >= target;
+    statusEl.textContent = onPace ? "ON PACE" : "BEHIND";
+    statusEl.className = "status " + (onPace ? "ahead" : "behind");
+  }
+}
+
+function formatMMSS(ms){
+  const s = Math.max(0, Math.round(ms/1000));
+  const m = Math.floor(s/60), r = s%60;
+  return `${String(m).padStart(2,"0")}:${String(r).padStart(2,"0")}`;
+}
+
+function updateSessionTimerUI(){
+  const box = el("sessionTimer");
+  if(sessionMinutes <= 0 || !sessionStartedAt){ box.style.display = "none"; return; }
+  box.style.display = "flex";
+  const elapsed = Date.now() - sessionStartedAt;
+  const remaining = sessionMinutes*60000 - elapsed;
+  el("sessionTimeLeft").textContent = formatMMSS(remaining);
+}
+
+function maybeEndSession(){
+  if(sessionMinutes <= 0 || !sessionStartedAt || sessionEnded) return;
+  const elapsed = Date.now() - sessionStartedAt;
+  if(elapsed >= sessionMinutes*60000 && (sessionState === "idle" || sessionState === "feedback")){
+    sessionEnded = true;
+    const groupsThisSession = stats.lifetimeGroups - sessionGroupsStart;
+    const xpThisSession = stats.xp - sessionXpStart;
+    const acc = sessionTotalChars ? Math.round(sessionCorrectChars/sessionTotalChars*100) : 0;
+    el("summaryHeadline").textContent = `Session complete — ${sessionMinutes} min`;
+    el("summaryDetail").textContent = `${groupsThisSession} groups · ${acc}% accuracy · +${xpThisSession} XP`;
+    el("summaryBanner").style.display = "block";
+  }
+}
+
+function renderPracticeIdle(){
+  practiceEl.innerHTML = `<div class="hint">Press SEND to copy a 5-character group.<br>Type what you hear — don't peek, just listen.</div>`;
+}
+function renderPracticePlaying(){
+  practiceEl.innerHTML = `<div class="sending">◆ SENDING ◆</div>`;
+}
+function renderPracticeInput(){
+  const len = currentGroup.length;
+  practiceEl.innerHTML = `
+    <div class="sending-inline" id="sendingInline">◆ still sending — you can answer now, no need to wait ◆</div>
+    <input id="typedInput" placeholder="TYPE WHAT YOU HEARD" maxlength="${len}" autocomplete="off" />
+  `;
+  const input = el("typedInput");
+  input.focus();
+  // inputShownAt is set when playback actually finishes (see handleSend), not here — that
+  // keeps the ICR reaction-time stat anchored to "time since the sound ended," per Nancy
+  // Kott's definition, even though you're free to start typing well before that.
+  input.addEventListener("input", () => { input.value = input.value.toUpperCase().slice(0,len); });
+  input.addEventListener("keydown", e => { if(e.key === "Enter") handleCheck(); });
+}
+function renderPracticeKeyer(){
+  echoSymbolBuffer = ""; echoDecoded = ""; echoKeyDownAt = null; echoLastReleaseAt = null;
+  clearTimeout(echoFinalizeTimer);
+  echoKeyerActive = true;
+  inputShownAt = Date.now();
+  practiceEl.innerHTML = `
+    <div class="keyer-hint">Key back what you heard — hold the button (or Space bar) for a dash, tap for a dot.<br>Pause briefly between letters. Press DONE KEYING when finished.</div>
+    <div id="keyerDecoded" class="keyer-decoded">&nbsp;</div>
+    <div id="keyerPattern" class="keyer-pattern">listening for your key…</div>
+    <button id="keyerBtn" class="keyer-btn">KEY</button>
+  `;
+  const btn = el("keyerBtn");
+  btn.addEventListener("mousedown", echoKeyDown);
+  btn.addEventListener("mouseup", echoKeyUp);
+  btn.addEventListener("mouseleave", () => { if(echoKeyDownAt) echoKeyUp(); });
+  btn.addEventListener("touchstart", echoKeyDown, {passive:false});
+  btn.addEventListener("touchend", echoKeyUp, {passive:false});
+}
+function renderPracticeFeedback(feedback){
+  const chars = feedback.sent.split("").map((c,i) => {
+    if(c === " ") return `<span style="width:10px;"></span>`;
+    const ok = feedback.correctArr[i];
+    return `<span class="fb-char ${ok?'fb-correct':'fb-wrong'}">${c}</span>`;
+  }).join("");
+  practiceEl.innerHTML = `
+    <div class="feedback-row" style="flex-wrap:wrap;">${chars}</div>
+    <div class="fb-note">you copied: ${feedback.typed || "(nothing)"} · ${Math.round(feedback.groupAcc*100)}% this group</div>
+  `;
+}
+
+async function handleSend(replay){
+  if(!sessionStartedAt && sessionMinutes > 0){
+    sessionStartedAt = Date.now();
+    sessionXpStart = stats.xp;
+    sessionGroupsStart = stats.lifetimeGroups;
+    sessionCorrectChars = 0; sessionTotalChars = 0;
+    sessionEnded = false;
+  }
+  const group = (replay && currentGroup) ? currentGroup : generateItem();
+  currentGroup = group;
+  audioPlaying = true;
+  // Echo mode still waits for the full pattern before you key it back — that's the point
+  // of the exercise. Every typed mode (groups/words/callsigns/scales) shows the answer box
+  // immediately and lets sessionState move to "input" right away, so you can answer as you
+  // hear it rather than waiting for playback to finish — closer to real head-copy anyway.
+  if(practiceMode === "echo"){
+    sessionState = "playing";
+    render();
+    renderPracticePlaying();
+  } else {
+    sessionState = "input";
+    render();
+    renderPracticeInput();
+  }
+  const totalMs = await playGroup(group);
+  setTimeout(() => {
+    audioPlaying = false;
+    if(practiceMode === "echo"){
+      if(sessionState === "playing"){
+        sessionState = "input";
+        render();
+        renderPracticeKeyer();
+      }
+    } else if(sessionState === "input"){
+      // Still waiting on an answer — the sound just finished, so the ICR clock (Nancy
+      // Kott's "time since the character's sound ended") starts now. If you'd already
+      // answered before the sound finished, there's nothing meaningful to time, so this
+      // is skipped — see the sessionState guard above.
+      inputShownAt = Date.now();
+      const inline = el("sendingInline");
+      if(inline) inline.style.display = "none";
+      render();
+    }
+  }, totalMs);
+}
+
+function handleCheck(){
+  let raw;
+  if(practiceMode === "echo"){
+    finalizeEchoChar(); // flush whatever's still mid-letter
+    echoKeyerActive = false;
+    clearTimeout(echoFinalizeTimer);
+    raw = echoDecoded;
+  } else {
+    const inputEl = el("typedInput");
+    raw = inputEl ? inputEl.value : "";
+  }
+  const sent = currentGroup;
+  const typed = raw.toUpperCase().padEnd(sent.length, " ").slice(0, sent.length);
+  const correctArr = sent.split("").map((c,i) => c === typed[i]);
+
+  // Per-character response time, per Nancy Kott's ICR benchmark (~500ms = "instant").
+  // This includes typing time so it trends rather than measures pure reaction time,
+  // but a falling average is still a real sign ICR is improving.
+  if(inputShownAt && !isScales){
+    const elapsedMs = Date.now() - inputShownAt;
+    const perCharMs = elapsedMs / Math.max(1, sent.length);
+    stats.reactionMsSum += perCharMs;
+    stats.reactionCount += 1;
+  }
+  inputShownAt = null;
+  const numCorrect = correctArr.filter(Boolean).length;
+  const groupAcc = numCorrect / sent.length;
+
+  // Fatigue detection, per CWops' "Controlling Frustration and Nervousness": the failure
+  // mode isn't low accuracy, it's accuracy that was fine and then drops mid-session —
+  // that's the signal to stop, not push through. Session-only, not persisted.
+  if(!isScales){
+    recentAccHistory.push(groupAcc);
+    if(recentAccHistory.length >= 8 && !fatigueWarned){
+      const earlier = recentAccHistory.slice(-8, -4);
+      const later = recentAccHistory.slice(-4);
+      const avgEarlier = earlier.reduce((a,b)=>a+b,0) / earlier.length;
+      const avgLater = later.reduce((a,b)=>a+b,0) / later.length;
+      if(avgEarlier - avgLater >= 0.25){
+        fatigueWarned = true;
+        setTimeout(() => {
+          const note = el("fatigueNote");
+          if(note) note.style.display = "flex";
+        }, 50);
+      }
+    }
+  }
+
+  sent.split("").forEach((c,i) => {
+    const prev = stats.charStats[c] || {correct:0,total:0};
+    stats.charStats[c] = {correct: prev.correct + (correctArr[i]?1:0), total: prev.total+1};
+  });
+
+  // Daily Scales is a review rep, not a random practice group — it still feeds the
+  // weak-character accuracy stats above, but it doesn't count toward unlocking the
+  // next character (it's trivially easy to ace since you already know every char in it).
+  let didLevelUp = false;
+  if(!isScales){
+    stats.rollingGroups = [...stats.rollingGroups, groupAcc].slice(-3);
+    const threshold = stats.fastUnlock ? 1 : 3;
+    const recent = stats.rollingGroups.slice(-threshold);
+    if(recent.length >= threshold && recent.every(a=>a>=0.9) && stats.unlockedCount < KOCH_ORDER.length){
+      stats.unlockedCount += 1;
+      stats.rollingGroups = [];
+      didLevelUp = true;
+    }
+  }
+
+  const today = todayStr();
+  if(!stats.firstPracticeDate) stats.firstPracticeDate = today;
+  if(stats.lastPracticeDate !== today){
+    const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
+    stats.streakDays = (stats.lastPracticeDate === yesterday) ? stats.streakDays+1 : 1;
+    stats.lastPracticeDate = today;
+    stats.groupsCompletedToday = 0;
+  }
+  stats.groupsCompletedToday += 1;
+  stats.lifetimeGroups += 1;
+  stats.dailyLog[today] = (stats.dailyLog[today] || 0) + sent.length; // feeds the activity heatmap
+  stats.bestStreak = Math.max(stats.bestStreak, stats.streakDays);
+  stats.xp += numCorrect*10 + (didLevelUp ? 50 : 0);
+
+  sessionCorrectChars += numCorrect;
+  sessionTotalChars += sent.length;
+
+  // Adaptive speed, per Morserino-32's Echo Trainer: a fully correct rep nudges effective
+  // speed up 1 wpm, a miss nudges it down 1 — "you will eventually always train at your
+  // limit," per the Morserino manual. Scoped to Echo mode only.
+  if(practiceMode === "echo" && !isScales){
+    if(groupAcc >= 1 && effWpm < 20) effWpm += 1;
+    else if(groupAcc < 1 && effWpm > 5) effWpm -= 1;
+    effWpmSlider.value = effWpm;
+  }
+
+  saveStats();
+  sessionState = "feedback";
+  const wasScales = isScales;
+  isScales = false;
+  render();
+  renderPracticeFeedback({sent, typed: raw.toUpperCase(), correctArr, groupAcc});
+  if(wasScales){
+    const note = document.createElement("div");
+    note.className = "fb-note";
+    note.style.marginTop = "4px";
+    note.textContent = "Daily Scales done — onto real practice.";
+    practiceEl.appendChild(note);
+  }
+
+  if(didLevelUp){
+    const banner = el("levelUpBanner");
+    banner.textContent = `73! New character unlocked → ${KOCH_ORDER[stats.unlockedCount-1]}`;
+    banner.style.display = "block";
+    setTimeout(() => { banner.style.display = "none"; }, 3200);
+  }
+  maybeEndSession();
+}
+
+function startPlacementTest(){
+  echoKeyerActive = false;
+  placementActive = true;
+  placementIndex = 0; placementLastGood = -1; placementCorrect = 0; placementTotal = 0; placementConsecWrong = 0;
+  sendBtn.disabled = true; replayBtn.style.display = "none"; checkBtn.style.display = "none";
+  el("placementBtn").disabled = true;
+  charWpmSlider.disabled = true; effWpmSlider.disabled = true;
+  render();
+  runPlacementStep();
+}
+
+async function runPlacementStep(){
+  if(placementIndex >= KOCH_ORDER.length || placementConsecWrong >= 2){
+    finishPlacement();
+    return;
+  }
+  const ch = KOCH_ORDER[placementIndex];
+  practiceEl.innerHTML = `<div class="sending">◆ TESTING ${placementIndex+1}/${KOCH_ORDER.length} ◆</div>`;
+  const totalMs = await playGroup(ch);
+  setTimeout(() => {
+    practiceEl.innerHTML = `<input id="placementInput" maxlength="1" autocomplete="off" placeholder="?"
+      style="width:70px;text-align:center;font-size:26px;background:var(--panel);color:var(--amber);
+      border:1px solid var(--amber);border-radius:6px;padding:8px;font-family:inherit;text-transform:uppercase;" />`;
+    const input = el("placementInput");
+    input.focus();
+    let submitted = false;
+    const submit = () => {
+      if(submitted) return; submitted = true;
+      const val = input.value.toUpperCase();
+      placementTotal++;
+      if(val === ch){ placementCorrect++; placementLastGood = placementIndex; placementConsecWrong = 0; }
+      else { placementConsecWrong++; }
+      placementIndex++;
+      runPlacementStep();
+    };
+    input.addEventListener("keydown", e => { if(e.key === "Enter") submit(); });
+    input.addEventListener("input", () => { if(input.value.length >= 1) setTimeout(submit, 200); });
+  }, totalMs);
+}
+
+function finishPlacement(){
+  placementActive = false;
+  const newUnlocked = Math.max(2, Math.min(KOCH_ORDER.length, placementLastGood + 2));
+  stats.unlockedCount = newUnlocked;
+  stats.rollingGroups = [];
+  if(!stats.firstPracticeDate) stats.firstPracticeDate = todayStr();
+  saveStats();
+  sendBtn.disabled = false; replayBtn.style.display = "inline-block";
+  el("placementBtn").disabled = false;
+  charWpmSlider.disabled = false; effWpmSlider.disabled = false;
+  render();
+  practiceEl.innerHTML = `
+    <div class="hint" style="color:var(--green);font-weight:700;">
+      Placement set: ${newUnlocked} characters unlocked (${placementCorrect}/${placementTotal} correct on the test).
+    </div>
+    <div class="hint">Press SEND to jump straight into practice at your level.</div>
+  `;
+}
+
+sendBtn.addEventListener("click", () => {
+  if(sessionState === "playing" || placementActive) return;
+  handleSend(false);
+});
+checkBtn.addEventListener("click", handleCheck);
+replayBtn.addEventListener("click", () => { if(currentGroup && !audioPlaying && sessionState !== "playing" && !placementActive) handleSend(true); });
+charWpmSlider.addEventListener("input", e => { charWpm = Number(e.target.value); render(); });
+effWpmSlider.addEventListener("input", e => { effWpm = Number(e.target.value); render(); });
+el("toneHz").addEventListener("input", e => { toneHz = Number(e.target.value); render(); });
+el("qrmToggle").addEventListener("click", () => { qrmEnabled = !qrmEnabled; render(); });
+el("statsToggleBtn").addEventListener("click", () => {
+  const panel = el("statsPanel");
+  const showing = panel.style.display === "block";
+  panel.style.display = showing ? "none" : "block";
+  renderStatsPanel();
+});
+el("converterToggleBtn").addEventListener("click", () => {
+  const panel = el("converterPanel");
+  panel.style.display = (panel.style.display === "block") ? "none" : "block";
+});
+el("converterPlay").addEventListener("click", () => { playArbitraryText(el("converterInput").value); });
+el("converterDownload").addEventListener("click", () => { downloadConverterWav(el("converterInput").value); });
+el("placementBtn").addEventListener("click", startPlacementTest);
+el("fastToggle").addEventListener("click", () => {
+  stats.fastUnlock = !stats.fastUnlock;
+  stats.rollingGroups = []; // fresh streak under the new rule
+  saveStats();
+  render();
+});
+el("introDismiss").addEventListener("click", () => {
+  stats.seenIntro = true;
+  saveStats();
+  el("introTip").style.display = "none";
+});
+el("fatigueDismiss").addEventListener("click", () => {
+  el("fatigueNote").style.display = "none";
+});
+
+el("modeGroups").addEventListener("click", () => { practiceMode = "groups"; echoKeyerActive = false; render(); renderPracticeIdle(); });
+el("modeWords").addEventListener("click", () => {
+  practiceMode = "words";
+  echoKeyerActive = false;
+  render();
+  practiceEl.innerHTML = availableWords().length > 0
+    ? `<div class="hint">Press SEND to copy a word.<br>Type the whole word as one sound-shape — not letter by letter.</div>`
+    : `<div class="hint">Not enough characters unlocked for word mode yet.<br>It'll kick in automatically as you unlock more — showing groups for now.</div>`;
+});
+el("modeCallsigns").addEventListener("click", () => {
+  practiceMode = "callsigns";
+  echoKeyerActive = false;
+  render();
+  practiceEl.innerHTML = availableCallsignPossible()
+    ? `<div class="hint">Press SEND to copy a practice callsign.<br>Synthetic, real prefix patterns — not an actual operator.</div>`
+    : `<div class="hint">Not enough characters unlocked for callsigns yet (they need digits too).<br>Showing groups for now.</div>`;
+});
+el("modeQso").addEventListener("click", () => {
+  practiceMode = "qso";
+  echoKeyerActive = false;
+  render();
+  practiceEl.innerHTML = availableQsoPossible()
+    ? `<div class="hint">Press SEND to copy a short QSO exchange.<br>This is the real shape of an on-air contact — read it as a whole, not letter by letter.</div>`
+    : `<div class="hint">Not enough characters unlocked for a QSO yet.<br>Showing groups for now.</div>`;
+});
+el("modeText").addEventListener("click", () => {
+  practiceMode = "text";
+  echoKeyerActive = false;
+  render();
+  practiceEl.innerHTML = availableTexts().length > 0
+    ? `<div class="hint">Press SEND to copy a line of real running text.<br>Read it as flowing text, not letter by letter — this is LCWO's "plain text" training.</div>`
+    : `<div class="hint">Not enough characters unlocked for text mode yet (it needs close to the full alphabet).<br>Showing groups for now.</div>`;
+});
+el("modeEcho").addEventListener("click", () => {
+  practiceMode = "echo";
+  echoKeyerActive = false;
+  render();
+  practiceEl.innerHTML = `<div class="hint">Press SEND, listen, then key the characters back yourself.<br>Correct speeds you up, a miss slows you down — you train at your edge.</div>`;
+});
+el("scalesBtn").addEventListener("click", () => {
+  if(placementActive || unlockedChars().length < 2) return;
+  echoKeyerActive = false;
+  isScales = true;
+  handleSend(false);
+});
+
+const sessionLenSelect = el("sessionLen"), customLenInput = el("customLen");
+sessionLenSelect.addEventListener("change", () => {
+  if(sessionLenSelect.value === "custom"){
+    customLenInput.style.display = "inline-block";
+    customLenInput.focus();
+  } else {
+    customLenInput.style.display = "none";
+    sessionMinutes = Number(sessionLenSelect.value);
+    sessionStartedAt = null; sessionEnded = false;
+    el("sessionTimer").style.display = "none";
+  }
+});
+customLenInput.addEventListener("input", () => {
+  const v = Number(customLenInput.value);
+  sessionMinutes = v > 0 ? v : 0;
+  sessionStartedAt = null; sessionEnded = false;
+  el("sessionTimer").style.display = "none";
+});
+
+el("summaryContinue").addEventListener("click", () => {
+  el("summaryBanner").style.display = "none";
+  sessionStartedAt = Date.now();
+  sessionXpStart = stats.xp;
+  sessionGroupsStart = stats.lifetimeGroups;
+  sessionCorrectChars = 0; sessionTotalChars = 0;
+  sessionEnded = false;
+});
+el("summaryStop").addEventListener("click", () => {
+  el("summaryBanner").style.display = "none";
+  sessionStartedAt = null;
+  sessionLenSelect.value = "0";
+  customLenInput.style.display = "none";
+  sessionMinutes = 0;
+  el("sessionTimer").style.display = "none";
+});
+
+sessionTimerHandle = setInterval(() => {
+  updateSessionTimerUI();
+  maybeEndSession();
+}, 1000);
+
+el("splashMark").addEventListener("click", () => {
+  // Also unlocks audio on mobile browsers, which require a user gesture before any sound can play.
+  audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+  if(audioCtx.state === "suspended") audioCtx.resume();
+  el("splash").style.display = "none";
+});
+
+render();
+renderPracticeIdle();
+</script>
+</body>
+</html>
