@@ -260,6 +260,91 @@
   }
   .converter-actions button:first-child{background:var(--amber); color:#1a1a18; border-color:var(--amber);}
   .converter-note{color:var(--text-dim); font-size:9px; margin-top:8px; opacity:.7;}
+
+.morse-chart{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:7px;margin-top:10px}
+.morse-tile{border:1px solid var(--line);border-radius:8px;padding:9px 7px;background:var(--bg);color:var(--text);text-align:center;cursor:pointer;min-height:58px}
+.morse-tile:hover,.morse-tile:focus{border-color:var(--accent);outline:2px solid transparent;transform:translateY(-1px)}
+.morse-tile strong{display:block;font-size:18px}.morse-tile span{display:block;font-family:monospace;letter-spacing:2px;margin-top:4px}.morse-tile small{display:block;opacity:.7;font-size:10px;margin-top:3px}
+.prosign-chart{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:7px}.prosign-card{border:1px solid var(--line);border-radius:8px;padding:9px;background:var(--bg)}.prosign-card b{font-family:monospace}.prosign-card code{display:block;margin:4px 0;letter-spacing:2px}.speed-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.speed-grid label{display:flex;flex-direction:column;gap:5px;font-size:12px}.speed-grid input{padding:9px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--text)}
+@media print{body *{visibility:hidden!important}#referencePanel,#referencePanel *{visibility:visible!important}#referencePanel{display:block!important;position:absolute;left:0;top:0;width:100%;background:white;color:black;border:0}.morse-tile,.prosign-card{background:white;color:black;border:1px solid #aaa;break-inside:avoid}}
+
+
+
+/* Keyline interface refresh: responsive, high-contrast radio workbench */
+:root{--amber:#ffc45c;--amber-dim:rgba(255,196,92,.14);--green:#72e3ad;--green-dim:rgba(114,227,173,.12);--red:#ff7777;--text-dim:#a0a9b7;--panel:#171d28;--panel-deep:#0d121b;--metal:#222c3b;--metal-light:#344154;--line:#344154;--bg:#101722;--text:#edf3fb;--accent:#ffc45c}
+body{display:block;padding:clamp(10px,2.5vw,32px);background:radial-gradient(ellipse at 15% 0%,#1b2b3b 0%,#0a1018 52%,#080c12 100%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.card{max-width:1120px;margin:0 auto;padding:clamp(16px,3vw,32px);border-radius:22px;background:linear-gradient(145deg,rgba(23,29,40,.98),rgba(11,16,24,.98));border:1px solid #344154;box-shadow:0 28px 80px rgba(0,0,0,.42)}
+.header{padding-bottom:18px;border-bottom:1px solid rgba(160,169,183,.16);gap:16px}.title{font-size:20px;letter-spacing:.14em}.subtitle{font-size:11px;margin-top:6px;letter-spacing:.04em}.rank-label{font-size:10px}.rank-val{font-size:15px;margin-top:4px}
+.app-nav{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 20px}.app-nav button{border:1px solid var(--metal-light);background:rgba(34,44,59,.72);color:#dce6f3;padding:10px 14px;border-radius:12px;font-size:12px;transition:background .15s,border-color .15s}.app-nav button:hover,.app-nav button:focus-visible{border-color:var(--amber);background:var(--amber-dim);outline:2px solid transparent}.app-nav .nav-primary{background:var(--amber);border-color:var(--amber);color:#1b1c20}
+.lcd{grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;padding:14px;background:rgba(8,12,18,.7);border-color:#344154;border-radius:16px}.lcd-item{padding:6px 2px}.lcd-label{font-size:10px;letter-spacing:.1em}.lcd-val{font-size:clamp(16px,2vw,23px);margin-top:5px}
+.practice{border-radius:16px;padding:24px;min-height:130px;background:linear-gradient(135deg,#0a111b,#111c2a);border-color:#3a4b61;box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}.practice .hint{font-size:14px;line-height:1.6}.practice .sending{font-size:18px}
+.controls{gap:12px}#sendBtn{padding:17px;border-radius:13px;box-shadow:0 7px 20px rgba(255,196,92,.13)}#checkBtn,#replayBtn{border-radius:12px;padding:13px 18px}#replayBtn{opacity:.8}
+.knobs{gap:18px;padding:18px;margin:16px 0 22px;background:rgba(8,12,18,.38);border:1px solid rgba(160,169,183,.14);border-radius:16px}.knob-label{font-size:11px;letter-spacing:.08em;color:#b5c1d1}input[type=range]{accent-color:var(--amber);cursor:pointer}
+.bank{grid-template-columns:repeat(10,minmax(0,1fr));gap:7px}.cell{border-radius:9px;font-size:13px;min-width:0}.cell.unlocked{box-shadow:none}
+.intro-tip{border-radius:12px;font-size:12px}.placement-row{margin:14px 0}.placement-row button{padding:10px 14px;border-radius:10px;font-size:11px}
+.stats-row-toggle{margin:14px 0 8px}#statsToggleBtn,#converterToggleBtn,.stats-row-toggle>button{border-radius:12px;padding:13px 14px;font-size:11px;letter-spacing:.06em;background:#121b28;border-color:#344154;color:#dce6f3;text-align:left}#statsToggleBtn:hover,#converterToggleBtn:hover,.stats-row-toggle>button:hover{border-color:var(--amber)}
+.converter-panel,.stats-panel{padding:18px;border-radius:16px;background:rgba(8,13,21,.75);border-color:#344154}.converter-panel .hint2{font-size:12px;color:#aab6c7}.converter-actions{gap:8px}.converter-actions button{border-radius:10px;padding:10px 13px;font-size:11px}.converter-actions button:first-child{background:var(--amber);color:#1a1d24}.converter-note{font-size:11px;line-height:1.6;opacity:.9}textarea,input[type=text],input[type=search],input[type=number],select{border-radius:10px!important}textarea:focus-visible,input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.keyer-console{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:18px;align-items:center;padding:16px;border:1px solid #344154;border-radius:16px;background:linear-gradient(145deg,rgba(26,39,55,.65),rgba(10,15,23,.7));margin-top:10px}.keyer-console-copy{font-size:12px;line-height:1.7;color:#b7c3d2}.keyer-console-copy strong{color:var(--amber)}.keyer-hint{font-size:12px;line-height:1.7}.keyer-btn{width:116px;height:116px;border-radius:28px;font-size:14px;box-shadow:0 10px 28px rgba(0,0,0,.25);transition:transform .07s,background .07s}.keyer-btn.pressed{transform:translateY(2px);box-shadow:0 0 0 7px var(--amber-dim),inset 0 2px 6px rgba(0,0,0,.3)}.keyer-pattern{font-size:15px;letter-spacing:.08em;color:#dce6f3}.keyer-decoded{font-size:28px;letter-spacing:.12em}.keyer-shortcut{display:inline-flex;align-items:center;gap:7px;margin:8px 0;padding:7px 10px;border-radius:9px;border:1px solid #4b5b70;background:#172333;color:#dce6f3;font-size:11px}.keycap{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:26px;padding:0 8px;border:1px solid #617189;border-bottom-width:3px;border-radius:6px;background:#263449;color:#fff;font-weight:800;font-size:11px}.space-toggle{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;background:#142131;color:#dce6f3;border:1px solid #344154;font-size:11px}.space-toggle[aria-pressed="true"]{border-color:var(--green);color:var(--green);background:var(--green-dim)}.space-indicator{display:inline-block;width:8px;height:8px;border-radius:50%;background:#657286}.space-toggle[aria-pressed="true"] .space-indicator{background:var(--green);box-shadow:0 0 10px var(--green-dim)}
+.morse-chart{grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:9px}.morse-tile{border-radius:12px;min-height:76px;padding:12px 8px;background:#111a27;border-color:#344154;color:#edf3fb}.morse-tile:hover,.morse-tile:focus{border-color:var(--amber);transform:translateY(-2px)}.morse-tile span{font-size:12px;letter-spacing:.03em;color:var(--amber)}.prosign-card{border-radius:12px;background:#111a27;border-color:#344154}.speed-grid label{gap:8px}.speed-grid input{padding:11px}
+.footer{font-size:11px;margin-top:28px}.credits-note{font-size:11px;opacity:.8!important;color:#b8c4d3}
+#spaceKeyStatus{color:var(--green);font-size:11px;margin:6px 0 0;min-height:18px}
+@media(min-width:900px){.card{padding:32px 36px}.bank{grid-template-columns:repeat(13,minmax(0,1fr))}.practice{margin-top:12px}.app-nav{position:sticky;top:8px;z-index:10;background:rgba(13,18,27,.88);backdrop-filter:blur(12px);padding:8px;border:1px solid rgba(160,169,183,.14);border-radius:14px}}
+@media(max-width:640px){body{padding:8px}.card{padding:15px;border-radius:17px}.header{align-items:flex-start}.title{font-size:17px}.subtitle{max-width:240px;line-height:1.5}.lcd{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:9px}.lcd-item:nth-child(4),.lcd-item:nth-child(5){grid-column:span 1}.lcd-val{font-size:17px}.app-nav button{flex:1 1 calc(50% - 8px);padding:11px 8px}.bank{grid-template-columns:repeat(6,minmax(0,1fr))}.knobs{grid-template-columns:1fr;padding:13px}.keyer-console{grid-template-columns:1fr;text-align:center}.keyer-console-copy{text-align:left}.placement-row{flex-direction:column}.placement-row button{width:100%}.controls{flex-wrap:wrap}#sendBtn{flex-basis:100%}#checkBtn{flex:1}.converter-actions button{flex:1 1 auto}.morse-chart{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition:none!important}}
+
+
+/* Replica-skill design pass: explicit design tokens, stronger hierarchy, clear states. */
+:root{
+  --surface-0:#0a1018;--surface-1:#101925;--surface-2:#151f2d;--surface-3:#1b293a;
+  --border-subtle:#2c3a4d;--border-strong:#50627a;--focus-ring:#ffe0a0;
+  --text-primary:#f2f6fc;--text-secondary:#b4c0d0;--text-tertiary:#8998ab;
+  --accent-primary:#ffc45c;--accent-strong:#ffd88c;--status-success:#72e3ad;--status-danger:#ff8585;
+}
+body{color:var(--text-primary);background:radial-gradient(ellipse at 50% -15%,#22344a 0%,#0b111a 52%,#070b11 100%);}
+.card{max-width:1240px;border-color:var(--border-subtle);background:linear-gradient(150deg,rgba(19,28,41,.99),rgba(9,14,22,.99));}
+.header .title{display:flex;align-items:center;gap:10px;font-size:clamp(20px,2vw,25px);letter-spacing:.12em;}
+.header .subtitle{color:var(--text-secondary);font-size:11px;letter-spacing:.1em;}
+.app-nav{gap:10px;margin:18px 0 22px;}
+.app-nav button{min-height:42px;font-weight:650;letter-spacing:.01em;}
+.lcd{box-shadow:inset 0 1px 0 rgba(255,255,255,.025);}
+.lcd-item{min-width:0;}
+.lcd-label{color:var(--text-tertiary);}
+.lcd-val{overflow-wrap:anywhere;}
+.mode-row{gap:14px;}
+.mode-toggle{gap:7px;}
+.mode-btn,.fast-toggle,.qrm-toggle{min-height:38px;}
+button{cursor:pointer;transition:transform .12s ease,border-color .12s ease,background .12s ease,box-shadow .12s ease;}
+button:hover{filter:brightness(1.06);}
+button:active{transform:translateY(1px);}
+button:disabled{opacity:.45;cursor:not-allowed;filter:none;}
+:focus-visible{outline:2px solid var(--focus-ring)!important;outline-offset:3px!important;}
+.converter-panel,.stats-panel{box-shadow:inset 0 1px 0 rgba(255,255,255,.025);}
+.converter-panel .knob-label{margin-bottom:8px;}
+textarea,select,input[type=number],input[type=search]{color:var(--text-primary)!important;background:var(--surface-1)!important;border-color:var(--border-strong)!important;}
+textarea::placeholder,input::placeholder{color:var(--text-tertiary)!important;}
+.device-manager,.backup-manager{margin-top:16px;padding:16px;border:1px solid var(--border-subtle);border-radius:15px;background:linear-gradient(135deg,rgba(24,38,55,.72),rgba(10,16,25,.8));}
+.device-manager-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.device-manager-sub{font-size:12px;line-height:1.65;color:var(--text-secondary);margin:5px 0 10px;}
+.device-manager-sub code{color:var(--accent-strong);background:rgba(255,196,92,.08);padding:2px 5px;border-radius:5px;}
+.device-pill{display:inline-flex;align-items:center;white-space:nowrap;border:1px solid var(--border-strong);border-radius:999px;padding:6px 10px;font-size:10px;color:var(--text-secondary);background:var(--surface-1);}
+.device-pill.connected{color:var(--status-success);border-color:var(--status-success);background:rgba(114,227,173,.08);}
+.device-actions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+.device-actions button{border:1px solid var(--border-strong);border-radius:10px;padding:10px 13px;background:var(--surface-3);color:var(--text-primary);font-size:11px;font-weight:750;letter-spacing:.04em;}
+.device-actions button:first-child{border-color:var(--accent-primary);color:#1b1d22;background:var(--accent-primary);}
+.device-status{font-size:12px;line-height:1.55;color:var(--status-success);min-height:20px;margin-top:6px;}
+.backup-manager{background:rgba(10,16,25,.55);}
+.intro-tip{line-height:1.6;}
+.intro-tip strong{color:var(--accent-strong);}
+.footer,.share-note,.credits-note,.discipline-note{line-height:1.7;}
+@media(max-width:640px){
+ .device-manager-head{flex-direction:column;}
+ .device-pill{white-space:normal;}
+ .device-actions button{flex:1 1 calc(50% - 8px);}
+ .device-manager,.backup-manager{padding:13px;}
+ .header{gap:12px;}
+}
+@media(prefers-contrast:more){.converter-panel,.stats-panel,.device-manager,.backup-manager,.practice{border-color:#aab8cb;}}
+
 </style>
 </head>
 <body>
@@ -277,13 +362,20 @@
   <div class="header">
     <div>
       <div class="title">📻 KEYLINE</div>
-      <div class="subtitle">Koch Method · Farnsworth Timing · Instant Recognition</div>
+      <div class="subtitle">CW WORKBENCH · TRAIN · DECODE · KEY · LOG</div>
     </div>
     <div>
       <div class="rank-label">Rank</div>
       <div class="rank-val" id="rankVal">Spark Gap</div>
     </div>
   </div>
+
+  <nav class="app-nav" aria-label="Quick navigation">
+    <button class="nav-primary" type="button" data-jump="practice">▶ Training desk</button>
+    <button type="button" data-jump="toolsPanel" data-open="toolsToggleBtn">⌨ Key input & tools</button>
+    <button type="button" data-jump="referencePanel" data-open="referenceToggleBtn">📖 Morse reference</button>
+    <button type="button" data-jump="statsPanel" data-open="statsToggleBtn">▥ Progress & stats</button>
+  </nav>
 
   <div class="lcd">
     <div class="lcd-item"><div class="lcd-label">LEVEL</div><div class="lcd-val" id="lvlVal">2/39</div></div>
@@ -301,7 +393,7 @@
   <div class="levelup" id="levelUpBanner"></div>
 
   <div class="intro-tip" id="introTip">
-    <span>New here: hit SEND, listen, type the letters you heard, hit CHECK. That's the whole loop — repeat it.</span>
+    <span><strong>Start here:</strong> send a group, copy it by ear, type what you heard, then check your answer. Use Key Input &amp; Tools for the software key, connected adapters, converter and receiver.</span>
     <button id="introDismiss">GOT IT</button>
   </div>
 
@@ -404,8 +496,90 @@
     </div>
   </div>
 
+
+  <div class="stats-row-toggle"><button id="toolsToggleBtn">📡 CW TOOLS — RX · KEYER · CODEBOOK · HISTORY</button></div>
+  <div id="toolsPanel" class="converter-panel">
+    <div class="knob-label">MORSE TEXT / PATTERN CONVERTER</div>
+    <textarea id="morseToolInput" placeholder="Enter text to encode, or syllables such as di-dah | dah-di-dit to decode"></textarea>
+    <div class="converter-actions">
+      <button id="encodeToolBtn">TEXT → MORSE</button><button id="decodeToolBtn">MORSE → TEXT</button>
+      <button id="playToolBtn">▶ PLAY TONE</button><button id="saveHistoryBtn">SAVE TO HISTORY</button>
+    </div>
+    <textarea id="morseToolOutput" readonly placeholder="Result appears here"></textarea>
+    <div class="knob-label" style="margin-top:14px">LIVE AUDIO CW RECEIVER (MICROPHONE)</div>
+    <div class="converter-note">Use headphones / low volume. This browser-based receiver detects tone energy; performance depends on noise and audio routing. It does not transmit RF.</div>
+    <div class="converter-actions"><button id="rxStartBtn">START RX MIC</button><button id="rxStopBtn">STOP RX</button><button id="rxClearBtn">CLEAR RX</button></div>
+    <div id="rxStatus" class="converter-note">Receiver stopped.</div>
+    <div id="rxPattern" class="sending" style="min-height:22px;word-break:break-word"></div>
+    <div id="rxDecoded" class="sending" style="min-height:22px;word-break:break-word"></div>
+    <div class="knob-label" style="margin-top:14px">CUSTOM OFFLINE CODEBOOK</div>
+    <div class="converter-note">One rule per line: trigger | replacement | meaning. Rules are stored in this browser only and applied to text before Morse encoding.</div>
+    <textarea id="codebookInput" placeholder="CQ | CALLING | calling station"></textarea>
+    <div class="converter-actions"><button id="codebookSaveBtn">SAVE RULES</button><button id="codebookExportBtn">EXPORT JSON</button><button id="codebookImportBtn">IMPORT JSON</button><button id="codebookClearBtn">CLEAR RULES</button><input type="file" id="codebookFile" accept=".json,application/json" style="display:none"></div>
+    <div id="codebookStatus" class="converter-note"></div>
+    <div class="knob-label" style="margin-top:14px">TRANSMISSION HISTORY</div>
+    <div class="converter-actions"><button id="historyShowBtn">SHOW HISTORY</button><button id="historyExportBtn">EXPORT CSV</button><button id="historyClearBtn">CLEAR HISTORY</button></div>
+    <div id="historyList" class="converter-note" style="white-space:pre-wrap;max-height:180px;overflow:auto"></div>
+    <div class="knob-label" style="margin-top:18px">KEY INPUT MANAGER</div>
+    <div class="keyer-console">
+      <div class="keyer-console-copy">
+        <strong>Straight key practice</strong><br>
+        Hold the on-screen key or use your keyboard spacebar. Spacebar keying works when this tools panel is open and focus is not inside a text field. Hardware key support depends on the connected adapter and browser.
+        <div class="keyer-shortcut"><span class="keycap">SPACE</span><span>Hold to key · release to finish element</span></div>
+        <div><button id="spaceKeyToggle" class="space-toggle" type="button" aria-pressed="true"><span class="space-indicator"></span><span id="spaceKeyToggleText">Spacebar keying enabled</span></button></div>
+        <div id="spaceKeyStatus" role="status" aria-live="polite">Ready for spacebar input.</div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:center"><button id="keyerBtn" class="keyer-btn" aria-label="Hold to send Morse keying elements">HOLD KEY</button></div>
+        <div id="keyerPattern" class="keyer-pattern" style="text-align:center;margin-top:14px">Ready · use SPACE or hold key</div>
+        <div id="keyerDecoded" class="keyer-decoded" style="text-align:center" aria-live="polite"></div>
+        <div class="converter-actions" style="justify-content:center"><button id="keyerFinishBtn">FINISH LETTER</button><button id="keyerClearBtn">CLEAR</button></div>
+      </div>
+    </div>
+    <div class="device-manager" aria-labelledby="deviceManagerTitle">
+      <div class="device-manager-head">
+        <div><div class="knob-label" id="deviceManagerTitle">CONNECTED KEY &amp; ADAPTERS</div><div class="device-manager-sub">Connect compatible keyboard-emulating keys, MIDI interfaces, or serial adapters. Browser support and adapter protocols vary.</div></div>
+        <span class="device-pill" id="deviceConnectionPill">No external device</span>
+      </div>
+      <div class="device-actions">
+        <button type="button" id="connectMidiBtn">CONNECT MIDI</button>
+        <button type="button" id="connectSerialBtn">CONNECT SERIAL</button>
+        <button type="button" id="disconnectDeviceBtn">DISCONNECT</button>
+      </div>
+      <div id="deviceStatus" class="device-status" role="status" aria-live="polite">Ready. Use Space, the on-screen key, or connect a supported adapter.</div>
+      <div class="device-manager-sub">MIDI mode treats a selected note/button as a straight-key contact. Serial mode expects newline-terminated <code>DOWN</code>/<code>UP</code> or <code>1</code>/<code>0</code> events. Keyboard-emulating adapters work through their configured keyboard key. This does not guarantee compatibility with every device.</div>
+    </div>
+    <div class="backup-manager" aria-labelledby="backupTitle">
+      <div class="knob-label" id="backupTitle">PORTABLE BACKUP</div>
+      <div class="device-manager-sub">Export Keyline progress, settings, custom codebook and transmission history as one JSON backup. Import validates the file before replacing Keyline data.</div>
+      <div class="device-actions"><button type="button" id="exportBackupBtn">EXPORT FULL BACKUP</button><button type="button" id="importBackupBtn">IMPORT BACKUP</button><input type="file" id="backupFileInput" accept=".json,application/json" hidden></div>
+      <div id="backupStatus" class="device-status" role="status" aria-live="polite">Your data remains in this browser unless you export it.</div>
+    </div>
+  </div>
+
+  <div class="stats-row-toggle"><button id="referenceToggleBtn">📖 MORSE REFERENCE · PROSIGNS · SPEED CALCULATOR</button></div>
+  <div id="referencePanel" class="converter-panel">
+    <div class="knob-label">INTERNATIONAL MORSE CODE REFERENCE</div>
+    <div class="converter-note">Search a character or its name. Select any tile to hear its Morse at your current speed and tone. Includes letters, numbers, common punctuation and procedural signals.</div>
+    <input id="morseSearch" type="search" placeholder="Search: Q, question mark, 73…" style="width:100%;box-sizing:border-box;margin:8px 0;padding:11px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text)">
+    <div id="morseChart" class="morse-chart" aria-live="polite"></div>
+    <div class="knob-label" style="margin-top:16px">COMMON PROSIGNS & OPERATING SHORTCUTS</div>
+    <div id="prosignChart" class="prosign-chart"></div>
+    <div class="converter-actions"><button id="copyReferenceBtn">COPY REFERENCE</button><button id="printReferenceBtn">PRINT / SAVE PDF</button></div>
+    <div class="knob-label" style="margin-top:16px">SPEED / TIMING CALCULATOR</div>
+    <div class="converter-note">Standard PARIS timing estimates. Farnsworth effective speed adds spacing while keeping characters at the selected character speed.</div>
+    <div class="speed-grid">
+      <label>Character speed (WPM)<input id="calcCharWpm" type="number" min="5" max="60" value="20"></label>
+      <label>Effective speed (WPM)<input id="calcEffWpm" type="number" min="5" max="60" value="10"></label>
+      <label>Tone frequency (Hz)<input id="calcToneHz" type="number" min="100" max="2000" value="600"></label>
+    </div>
+    <div id="speedCalcResult" class="converter-note" style="margin-top:8px"></div>
+    <div class="converter-actions"><button id="applySpeedCalcBtn">APPLY TO TRAINER</button></div>
+  </div>
+
   <div class="footer" id="footerStats">0 groups today · 0 lifetime · best streak 0d</div>
   <div class="share-note">Runs 100% offline — no internet, no server. Send this file to anyone; progress is saved per-browser.</div>
+  <div class="credits-note" style="opacity:.8;font-size:11px">Built by Ms. Neil Bruce VU3EFZ</div>
   <div class="discipline-note">Copy by ear only — no dot-dash chart while training. Once you're past ~15 characters, try letting 1-2 letters lag behind what's playing before you write them; that's how real head-copy works.</div>
   <div class="credits-note">Keyline is an independent trainer. Its method follows the Koch method and published practice guidance from LCWO.net and CW Academy (CWops) — including LCWO-style tone/noise controls, character statistics, and QSO practice — and its Echo mode is modeled on Morserino-32's Echo Trainer. Keyline is not affiliated with, endorsed by, or a product of any of them.</div>
 </div>
@@ -416,7 +590,10 @@ const MORSE = {
   K:"-.-",L:".-..",M:"--",N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",
   U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--..",
   0:"-----",1:".----",2:"..---",3:"...--",4:"....-",5:".....",6:"-....",7:"--...",8:"---..",9:"----.",
-  ".":".-.-.-",",":"--..--","?":"..--..","/":"-..-."
+  ".":".-.-.-",",":"--..--","?":"..--..","/":"-..-.",
+  "'":".----.","!":"-.-.--",":":"---...",";":"-.-.-.","(":"-.--.",")":"-.--.-",
+  "&":".-...","=":"-...-","+":".-.-.","-":"-....-","_":"..--.-",
+  '"':".-..-.","$":"...-..-","@":".--.-.","¿":"..-.-","¡":"--...-"
 };
 const KOCH_ORDER = ["K","M","R","S","U","A","P","T","L","O","W","I",".","N","J","E","F","0",
   "Y",",","V","G","5","/","Q","9","Z","H","3","8","B","?","4","2","7","C","1","D","6","X"];
@@ -475,7 +652,10 @@ const DEFAULT_STATS = {
 const ICR_TARGET_MS = 500;
 
 let stats = loadStats();
-let charWpm = 20, effWpm = 10;
+const SETTINGS_KEY = "keyline-settings-v1";
+let persistedSettings = {};
+try { persistedSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY)||"{}"); if(!persistedSettings || typeof persistedSettings!=="object" || Array.isArray(persistedSettings)) persistedSettings={}; } catch(_) { persistedSettings={}; }
+let charWpm = Math.max(15,Math.min(25,Number(persistedSettings.charWpm)||20)), effWpm = Math.max(5,Math.min(charWpm,Number(persistedSettings.effWpm)||10));
 let sessionState = "idle"; // idle | playing | input | feedback
 let audioPlaying = false; // true only while the character/group's sound is actually sounding —
 // separate from sessionState so the answer box can appear and take input the instant SEND is
@@ -484,9 +664,12 @@ let audioPlaying = false; // true only while the character/group's sound is actu
 // race it.)
 let currentGroup = "";
 let audioCtx = null;
-let practiceMode = "groups"; // groups | words | callsigns | qso | text | echo
-let toneHz = 600; // sidetone pitch — LCWO lets you set this too, default matches a typical CW rig sidetone
-let qrmEnabled = false; // LCWO's "add noise" option — faint band noise mixed under the tone
+let practiceMode = ["groups","words","callsigns","qso","text","echo"].includes(persistedSettings.practiceMode)?persistedSettings.practiceMode:"groups"; // groups | words | callsigns | qso | text | echo
+let toneHz = Math.max(400,Math.min(1000,Number(persistedSettings.toneHz)||600)); // sidetone pitch
+let qrmEnabled = persistedSettings.qrmEnabled===true; // optional band-noise simulation
+function saveKeylineSettings(){
+  try{localStorage.setItem(SETTINGS_KEY,JSON.stringify({charWpm,effWpm,toneHz,practiceMode,qrmEnabled,sessionLen:document.getElementById("sessionLen")?.value||"0"}));}catch(_){}
+}
 
 // Echo Trainer (sending) state — modeled on Morserino-32's Echo Trainer: hear a character
 // or short group, then key it back on the spacebar or the on-screen button. A press is
@@ -697,7 +880,7 @@ function echoKeyUp(e){
 }
 function renderEchoReadout(){
   const pat = el("keyerPattern");
-  if(pat) pat.textContent = echoSymbolBuffer.replace(/\./g,"•").replace(/-/g,"–") || "listening for your key…";
+  if(pat) pat.textContent = (typeof patternToSpoken === "function" ? patternToSpoken(echoSymbolBuffer) : echoSymbolBuffer) || "listening for your key…";
   const dec = el("keyerDecoded");
   if(dec) dec.textContent = echoDecoded || " ";
 }
@@ -1315,7 +1498,7 @@ replayBtn.addEventListener("click", () => { if(currentGroup && !audioPlaying && 
 charWpmSlider.addEventListener("input", e => { charWpm = Number(e.target.value); render(); });
 effWpmSlider.addEventListener("input", e => { effWpm = Number(e.target.value); render(); });
 el("toneHz").addEventListener("input", e => { toneHz = Number(e.target.value); render(); });
-el("qrmToggle").addEventListener("click", () => { qrmEnabled = !qrmEnabled; render(); });
+el("qrmToggle").addEventListener("click", () => { qrmEnabled = !qrmEnabled; saveKeylineSettings(); render(); });
 el("statsToggleBtn").addEventListener("click", () => {
   const panel = el("statsPanel");
   const showing = panel.style.display === "block";
@@ -1347,6 +1530,7 @@ el("fatigueDismiss").addEventListener("click", () => {
 el("modeGroups").addEventListener("click", () => { practiceMode = "groups"; echoKeyerActive = false; render(); renderPracticeIdle(); });
 el("modeWords").addEventListener("click", () => {
   practiceMode = "words";
+  saveKeylineSettings();
   echoKeyerActive = false;
   render();
   practiceEl.innerHTML = availableWords().length > 0
@@ -1355,6 +1539,7 @@ el("modeWords").addEventListener("click", () => {
 });
 el("modeCallsigns").addEventListener("click", () => {
   practiceMode = "callsigns";
+  saveKeylineSettings();
   echoKeyerActive = false;
   render();
   practiceEl.innerHTML = availableCallsignPossible()
@@ -1363,6 +1548,7 @@ el("modeCallsigns").addEventListener("click", () => {
 });
 el("modeQso").addEventListener("click", () => {
   practiceMode = "qso";
+  saveKeylineSettings();
   echoKeyerActive = false;
   render();
   practiceEl.innerHTML = availableQsoPossible()
@@ -1371,6 +1557,7 @@ el("modeQso").addEventListener("click", () => {
 });
 el("modeText").addEventListener("click", () => {
   practiceMode = "text";
+  saveKeylineSettings();
   echoKeyerActive = false;
   render();
   practiceEl.innerHTML = availableTexts().length > 0
@@ -1379,6 +1566,7 @@ el("modeText").addEventListener("click", () => {
 });
 el("modeEcho").addEventListener("click", () => {
   practiceMode = "echo";
+  saveKeylineSettings();
   echoKeyerActive = false;
   render();
   practiceEl.innerHTML = `<div class="hint">Press SEND, listen, then key the characters back yourself.<br>Correct speeds you up, a miss slows you down — you train at your edge.</div>`;
@@ -1392,6 +1580,7 @@ el("scalesBtn").addEventListener("click", () => {
 
 const sessionLenSelect = el("sessionLen"), customLenInput = el("customLen");
 sessionLenSelect.addEventListener("change", () => {
+  saveKeylineSettings();
   if(sessionLenSelect.value === "custom"){
     customLenInput.style.display = "inline-block";
     customLenInput.focus();
@@ -1437,6 +1626,376 @@ el("splashMark").addEventListener("click", () => {
   if(audioCtx.state === "suspended") audioCtx.resume();
   el("splash").style.display = "none";
 });
+
+
+// ---- MorseOps-inspired offline toolkit ----
+const REVERSE_MORSE = Object.fromEntries(Object.entries(MORSE).map(([k,v])=>[v,k]));
+const CODEBOOK_KEY = "keyline-custom-codebook-v1";
+const HISTORY_KEY = "keyline-transmission-history-v1";
+let codebookRules = [];
+let transmissionHistory = [];
+try { codebookRules = JSON.parse(localStorage.getItem(CODEBOOK_KEY)||"[]"); } catch(e) {}
+try { transmissionHistory = JSON.parse(localStorage.getItem(HISTORY_KEY)||"[]"); } catch(e) {}
+let rxStream = null, rxCtx = null, rxAnalyser = null, rxRAF = null;
+let rxToneOn = false, rxEdgeAt = 0, rxLastEdge = 0, rxSymbols = "", rxText = "";
+let keyerDownAt = 0, keyerBuffer = "", keyerText = "", keyerLastUp = 0, keyerTimer = null;
+
+function applyCodebook(text) {
+  let out = text.toUpperCase();
+  codebookRules.filter(r=>r.enabled!==false).sort((a,b)=>b.trigger.length-a.trigger.length).forEach(r=>{
+    if(r.trigger) out = out.split(r.trigger.toUpperCase()).join((r.replacement||"").toUpperCase());
+  });
+  return out;
+}
+function patternToSpoken(pattern) {
+  // A dot is spoken as “di” when another element follows, and “dit” at the end.
+  return [...pattern].map((sym,i)=>sym==="-"?"dah":(i===pattern.length-1?"dit":"di")).join("-");
+}
+function spokenToPattern(token) {
+  const t=token.trim().toLowerCase();
+  if(!t) return "";
+  if(/^[.\-−·•]+$/.test(t)) return t.replace(/[−–]/g,"-").replace(/[·•]/g,".");
+  const parts=t.split(/[\s-]+/).filter(Boolean);
+  if(parts.every(x=>["di","dit","dah"].includes(x))) return parts.map(x=>x==="dah"?"-":".").join("");
+  return t;
+}
+function morseEncode(text) {
+  return applyCodebook(text).split("").map(c=>c===" " ? "/" : (MORSE[c] ? patternToSpoken(MORSE[c]) : "")).filter(Boolean).join(" | ");
+}
+function morseDecode(input) {
+  return input.trim().split(/\s*\|\s*|\s+\/\s+|\s{2,}/).map(tok=>tok==="/" ? " " : (REVERSE_MORSE[spokenToPattern(tok)]||"?")).join("").replace(/ {2,}/g," ");
+}
+function addHistory(text, morse, mode="manual") {
+  transmissionHistory.unshift({time:new Date().toISOString(),text,morse,mode,wpm:charWpm,toneHz});
+  transmissionHistory=transmissionHistory.slice(0,300);
+  localStorage.setItem(HISTORY_KEY,JSON.stringify(transmissionHistory));
+}
+function renderHistory() {
+  const node=document.getElementById("historyList");
+  node.textContent=transmissionHistory.length ? transmissionHistory.slice(0,40).map((h,i)=>`${i+1}. ${new Date(h.time).toLocaleString()} [${h.mode}] ${h.text}\n   ${h.morse}`).join("\n") : "No saved transmissions.";
+}
+function keyerFinalize() {
+  if(!keyerBuffer) return;
+  keyerText += REVERSE_MORSE[keyerBuffer] || "?";
+  keyerBuffer="";
+  document.getElementById("keyerDecoded").textContent=keyerText;
+  document.getElementById("keyerPattern").textContent="—";
+}
+function keyerDown(e) {
+  if(e) e.preventDefault();
+  if(keyerDownAt) return;
+  if(keyerLastUp && Date.now()-keyerLastUp > 250) keyerFinalize();
+  clearTimeout(keyerTimer);
+  keyerDownAt=Date.now();
+  document.getElementById("keyerBtn").classList.add("pressed");
+  try { audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==="suspended")audioCtx.resume(); } catch(e){}
+}
+function keyerUp(e) {
+  if(e) e.preventDefault();
+  if(!keyerDownAt) return;
+  const duration=Date.now()-keyerDownAt;
+  keyerBuffer += duration < (1200/charWpm)*2 ? "." : "-";
+  keyerDownAt=0; keyerLastUp=Date.now();
+  document.getElementById("keyerBtn").classList.remove("pressed");
+  document.getElementById("keyerPattern").textContent=patternToSpoken(keyerBuffer);
+  try {
+    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    const osc=audioCtx.createOscillator(), gain=audioCtx.createGain();
+    osc.frequency.value=toneHz; gain.gain.value=.12; osc.connect(gain).connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime+Math.max(.04,duration/1000));
+  } catch(e){}
+  clearTimeout(keyerTimer); keyerTimer=setTimeout(keyerFinalize,700);
+}
+async function startRx() {
+  if(!navigator.mediaDevices?.getUserMedia) { document.getElementById("rxStatus").textContent="Microphone capture is not supported in this browser/context."; return; }
+  try {
+    rxStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+    rxCtx=new (window.AudioContext||window.webkitAudioContext)();
+    const src=rxCtx.createMediaStreamSource(rxStream); rxAnalyser=rxCtx.createAnalyser(); rxAnalyser.fftSize=2048; src.connect(rxAnalyser);
+    const data=new Uint8Array(rxAnalyser.frequencyBinCount);
+    const status=document.getElementById("rxStatus");
+    status.textContent="Listening… play a CW tone into the microphone.";
+    const bin=Math.max(1,Math.min(data.length-1,Math.round(toneHz/rxCtx.sampleRate*rxAnalyser.fftSize)));
+    const tick=()=>{
+      if(!rxAnalyser)return;
+      rxAnalyser.getByteFrequencyData(data);
+      let energy=0, total=0;
+      for(let i=Math.max(0,bin-3);i<=Math.min(data.length-1,bin+3);i++) energy+=data[i];
+      for(let i=0;i<data.length;i++) total+=data[i];
+      const on=energy>85 && energy>total*.16;
+      const now=performance.now();
+      if(on!==rxToneOn) {
+        const dur=now-rxEdgeAt;
+        if(rxEdgeAt && dur>15) {
+          if(rxToneOn) rxSymbols += dur < (1200/charWpm)*2 ? "." : "-";
+          else if(dur > (1200/charWpm)*2.5) { if(rxSymbols){rxText+=REVERSE_MORSE[rxSymbols]||"?";rxSymbols="";} if(dur>(1200/charWpm)*5)rxText+=" "; }
+        }
+        rxToneOn=on; rxEdgeAt=now;
+        document.getElementById("rxPattern").textContent=patternToSpoken(rxSymbols);
+        document.getElementById("rxDecoded").textContent=rxText;
+      }
+      rxRAF=requestAnimationFrame(tick);
+    };
+    rxEdgeAt=performance.now(); rxRAF=requestAnimationFrame(tick);
+  } catch(err) { document.getElementById("rxStatus").textContent="Microphone error: "+err.message+" (microphone permission and HTTPS/localhost may be required)."; }
+}
+function stopRx() {
+  if(rxRAF) cancelAnimationFrame(rxRAF); rxRAF=null; rxAnalyser=null;
+  if(rxStream) rxStream.getTracks().forEach(t=>t.stop()); rxStream=null;
+  if(rxCtx) rxCtx.close().catch(()=>{}); rxCtx=null;
+  document.getElementById("rxStatus").textContent="Receiver stopped.";
+}
+document.getElementById("toolsToggleBtn").addEventListener("click",()=>{const p=document.getElementById("toolsPanel");p.style.display=p.style.display==="block"?"none":"block";});
+document.getElementById("encodeToolBtn").addEventListener("click",()=>{const t=document.getElementById("morseToolInput").value;document.getElementById("morseToolOutput").value=morseEncode(t);});
+document.getElementById("decodeToolBtn").addEventListener("click",()=>{document.getElementById("morseToolOutput").value=morseDecode(document.getElementById("morseToolInput").value);});
+document.getElementById("playToolBtn").addEventListener("click",()=>playArbitraryText(document.getElementById("morseToolInput").value));
+document.getElementById("saveHistoryBtn").addEventListener("click",()=>{const t=document.getElementById("morseToolInput").value;addHistory(t,morseEncode(t));renderHistory();});
+document.getElementById("rxStartBtn").addEventListener("click",startRx);
+document.getElementById("rxStopBtn").addEventListener("click",stopRx);
+document.getElementById("rxClearBtn").addEventListener("click",()=>{rxSymbols="";rxText="";document.getElementById("rxPattern").textContent="";document.getElementById("rxDecoded").textContent="";});
+document.getElementById("codebookSaveBtn").addEventListener("click",()=>{
+  codebookRules=document.getElementById("codebookInput").value.split(/\r?\n/).map(line=>line.split("|")).filter(a=>a.length>=2&&a[0].trim()).map(a=>({trigger:a[0].trim(),replacement:a[1].trim(),meaning:(a[2]||"").trim(),enabled:true}));
+  localStorage.setItem(CODEBOOK_KEY,JSON.stringify(codebookRules)); document.getElementById("codebookStatus").textContent=`Saved ${codebookRules.length} rules locally.`;
+});
+document.getElementById("codebookExportBtn").addEventListener("click",()=>{
+  const blob=new Blob([JSON.stringify(codebookRules,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="keyline-codebook.json";a.click();URL.revokeObjectURL(url);
+});
+document.getElementById("codebookImportBtn").addEventListener("click",()=>document.getElementById("codebookFile").click());
+document.getElementById("codebookFile").addEventListener("change",async e=>{
+  try{const v=JSON.parse(await e.target.files[0].text());if(!Array.isArray(v))throw Error("Expected a JSON array");codebookRules=v.filter(r=>r&&typeof r.trigger==="string"&&typeof r.replacement==="string");localStorage.setItem(CODEBOOK_KEY,JSON.stringify(codebookRules));document.getElementById("codebookInput").value=codebookRules.map(r=>`${r.trigger} | ${r.replacement} | ${r.meaning||""}`).join("\n");document.getElementById("codebookStatus").textContent=`Imported ${codebookRules.length} rules.`;}catch(err){document.getElementById("codebookStatus").textContent="Import failed: "+err.message;}
+});
+document.getElementById("codebookClearBtn").addEventListener("click",()=>{codebookRules=[];localStorage.setItem(CODEBOOK_KEY,"[]");document.getElementById("codebookInput").value="";document.getElementById("codebookStatus").textContent="Codebook cleared.";});
+document.getElementById("historyShowBtn").addEventListener("click",renderHistory);
+document.getElementById("historyExportBtn").addEventListener("click",()=>{
+ const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+ const csv=["time,mode,text,morse,wpm,toneHz",...transmissionHistory.map(h=>[h.time,h.mode,h.text,h.morse,h.wpm,h.toneHz].map(q).join(","))].join("\r\n");
+ const url=URL.createObjectURL(new Blob([csv],{type:"text/csv"})),a=document.createElement("a");a.href=url;a.download="keyline-history.csv";a.click();URL.revokeObjectURL(url);
+});
+document.getElementById("historyClearBtn").addEventListener("click",()=>{transmissionHistory=[];localStorage.setItem(HISTORY_KEY,"[]");renderHistory();});
+const kb=document.getElementById("keyerBtn");
+kb.addEventListener("pointerdown",keyerDown); kb.addEventListener("pointerup",keyerUp); kb.addEventListener("pointerleave",e=>{if(keyerDownAt)keyerUp(e);}); kb.addEventListener("pointercancel",keyerUp);
+// Spacebar keying: only captures Space while the CW tools/keyer is visible and enabled.
+// Text fields retain normal space insertion; keyup always releases an active key safely.
+let spacebarKeyingEnabled = true;
+function isTextEntryTarget(target){
+  return !!target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
+}
+function syncSpacebarControl(){
+  const toggle=document.getElementById("spaceKeyToggle");
+  const label=document.getElementById("spaceKeyToggleText");
+  const status=document.getElementById("spaceKeyStatus");
+  if(toggle) toggle.setAttribute("aria-pressed",String(spacebarKeyingEnabled));
+  if(label) label.textContent=spacebarKeyingEnabled?"Spacebar keying enabled":"Spacebar keying disabled";
+  if(status) status.textContent=spacebarKeyingEnabled?"Ready for spacebar input.":"Spacebar shortcut is off; use the on-screen key.";
+}
+document.getElementById("spaceKeyToggle")?.addEventListener("click",()=>{
+  spacebarKeyingEnabled=!spacebarKeyingEnabled;
+  if(!spacebarKeyingEnabled && keyerDownAt) keyerUp();
+  syncSpacebarControl();
+});
+document.addEventListener("keydown",e=>{
+  if(e.code!=="Space" || e.repeat || isTextEntryTarget(e.target)) return;
+  const panel=document.getElementById("toolsPanel");
+  const panelOpen=panel && getComputedStyle(panel).display!=="none";
+  if(!panelOpen || !spacebarKeyingEnabled || echoKeyerActive) return;
+  e.preventDefault();
+  keyerDown(e);
+});
+document.addEventListener("keyup",e=>{
+  if(e.code!=="Space" || !keyerDownAt) return;
+  const panel=document.getElementById("toolsPanel");
+  const panelOpen=panel && getComputedStyle(panel).display!=="none";
+  if(panelOpen && spacebarKeyingEnabled && !echoKeyerActive) keyerUp(e);
+  else keyerUp(e);
+});
+window.addEventListener("blur",()=>{if(keyerDownAt)keyerUp();});
+syncSpacebarControl();
+
+// Quick navigation opens collapsible panels before scrolling to them.
+document.querySelectorAll("[data-jump]").forEach(btn=>btn.addEventListener("click",()=>{
+  const target=document.getElementById(btn.dataset.jump);
+  const opener=btn.dataset.open?document.getElementById(btn.dataset.open):null;
+  if(target && getComputedStyle(target).display==="none" && opener) opener.click();
+  setTimeout(()=>target?.scrollIntoView({behavior:"smooth",block:"start"}),30);
+}));
+document.getElementById("keyerFinishBtn").addEventListener("click",keyerFinalize);
+document.getElementById("keyerClearBtn").addEventListener("click",()=>{keyerBuffer="";keyerText="";document.getElementById("keyerPattern").textContent="";document.getElementById("keyerDecoded").textContent="";});
+
+// ---- Reference library and practical utilities ----
+const PROSIGNS = [
+  {code:"AR", pattern:".-.-.", meaning:"End of message / end of transmission"},
+  {code:"SK", pattern:"...-.-", meaning:"End of contact; clear"},
+  {code:"KN", pattern:"-.--.", meaning:"Invite only the named station to transmit"},
+  {code:"AS", pattern:".-...", meaning:"Wait"},
+  {code:"BT", pattern:"-...-", meaning:"Break between parts of a message"},
+  {code:"BK", pattern:"-...-.-", meaning:"Break / break-in (common operating usage)"},
+  {code:"SOS", pattern:"...---...", meaning:"Distress signal"},
+  {code:"HH", pattern:"........", meaning:"Error; correct the preceding transmission"},
+  {code:"SN", pattern:"...-.", meaning:"Understood / verified (usage varies)"},
+  {code:"CQ", pattern:"-.-. --.-", meaning:"General call to any station"},
+  {code:"73", pattern:"--... ...--", meaning:"Best regards"},
+  {code:"88", pattern:"---.. ---..", meaning:"Love and kisses; use appropriately"}
+];
+function renderMorseReference(filter="") {
+  const chart=document.getElementById("morseChart"); if(!chart)return;
+  const q=filter.trim().toLowerCase();
+  const names={".":"period / full stop",",":"comma","?":"question mark","/":"slash","'":"apostrophe",'"':"quotation mark","!":"exclamation mark",":":"colon",";":"semicolon","(":"parenthesis", ")":"parenthesis", "@":"at sign", "_":"underscore", "-":"hyphen", "+":"plus", "=":"equals", "&":"ampersand", "$":"dollar sign", "¿":"inverted question mark", "¡":"inverted exclamation mark"};
+  chart.innerHTML="";
+  Object.entries(MORSE).filter(([ch,pat])=>!q||ch.toLowerCase().includes(q)||pat.includes(q)||((names[ch]||"").includes(q))).forEach(([ch,pat])=>{
+    const tile=document.createElement("button");tile.type="button";tile.className="morse-tile";tile.title=`Play ${ch}: ${patternToSpoken(pat)}`;
+    const label=names[ch]||((/[A-Z]/.test(ch))?"letter":"digit");
+    tile.innerHTML=`<strong>${ch.replace(/&/g,"&amp;").replace(/</g,"&lt;")}</strong><span>${patternToSpoken(pat)}</span><small>${label}</small>`;
+    tile.addEventListener("click",()=>playArbitraryText(ch));chart.appendChild(tile);
+  });
+  if(!chart.children.length)chart.textContent="No matching characters.";
+}
+function renderProsigns(){
+ const node=document.getElementById("prosignChart");if(!node)return;node.innerHTML="";
+ PROSIGNS.forEach(p=>{const card=document.createElement("div");card.className="prosign-card";const b=document.createElement("b");b.textContent=p.code;const c=document.createElement("code");c.textContent=p.pattern.split(" ").map(patternToSpoken).join(" / ");const d=document.createElement("div");d.textContent=p.meaning;card.append(b,c,d);node.appendChild(card);});
+}
+function updateSpeedCalc(){
+ const cw=Math.max(5,Math.min(60,Number(document.getElementById("calcCharWpm").value)||20));
+ const ew=Math.max(5,Math.min(cw,Number(document.getElementById("calcEffWpm").value)||cw));
+ const hz=Math.max(100,Math.min(2000,Number(document.getElementById("calcToneHz").value)||600));
+ const dit=1.2/cw, parisContent=31*dit, target=60/ew, extra=Math.max(0,target-dit*31), wordGap=Math.max(0,target-dit*31);
+ document.getElementById("speedCalcResult").textContent=`Dit: ${(dit*1000).toFixed(1)} ms · dah: ${(dit*3000).toFixed(1)} ms · tone: ${hz} Hz · effective PARIS word: ${(target).toFixed(2)} s · estimated extra spacing per 5-character word: ${(wordGap*1000).toFixed(0)} ms. ${ew===cw?"Straight timing (no Farnsworth spacing).":"Farnsworth-style spacing enabled."}`;
+}
+document.getElementById("referenceToggleBtn").addEventListener("click",()=>{const p=document.getElementById("referencePanel");p.style.display=p.style.display==="block"?"none":"block";if(p.style.display==="block"){renderMorseReference(document.getElementById("morseSearch").value);renderProsigns();updateSpeedCalc();}});
+document.getElementById("morseSearch").addEventListener("input",e=>renderMorseReference(e.target.value));
+["calcCharWpm","calcEffWpm","calcToneHz"].forEach(id=>document.getElementById(id).addEventListener("input",updateSpeedCalc));
+document.getElementById("applySpeedCalcBtn").addEventListener("click",()=>{
+ const cw=Math.max(15,Math.min(25,Number(document.getElementById("calcCharWpm").value)||20));
+ const ew=Math.max(5,Math.min(20,Number(document.getElementById("calcEffWpm").value)||10));
+ const hz=Math.max(400,Math.min(1000,Number(document.getElementById("calcToneHz").value)||600));
+ document.getElementById("charWpm").value=cw;document.getElementById("effWpm").value=Math.min(cw,ew);document.getElementById("toneHz").value=hz;
+ charWpm=cw;effWpm=Math.min(cw,ew);toneHz=hz;saveKeylineSettings();
+ document.getElementById("charWpmLabel").textContent=`CHARACTER SPEED — ${cw} WPM`;document.getElementById("effWpmLabel").textContent=`EFFECTIVE SPEED — ${Math.min(cw,ew)} WPM`;document.getElementById("toneHzLabel").textContent=`TONE PITCH — ${hz} HZ`;
+ render();updateSpeedCalc();
+});
+document.getElementById("copyReferenceBtn").addEventListener("click",async()=>{
+ const text=Object.entries(MORSE).map(([c,p])=>`${c} ${p}`).join("\n")+"\n\n"+PROSIGNS.map(p=>`${p.code} ${p.pattern} — ${p.meaning}`).join("\n");
+ try{await navigator.clipboard.writeText(text);document.getElementById("speedCalcResult").textContent="Reference copied to clipboard.";}catch(e){const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();document.getElementById("speedCalcResult").textContent="Reference copied.";}
+});
+document.getElementById("printReferenceBtn").addEventListener("click",()=>window.print());
+// ---- Connected key adapters and portable backup (progressive enhancement) ----
+let keyDeviceCleanup = null;
+let midiAccessRef = null;
+let serialPortRef = null;
+let serialReaderRef = null;
+let externalKeyIsDown = false;
+function setDeviceStatus(message, connected=false){
+  const status=document.getElementById("deviceStatus");
+  const pill=document.getElementById("deviceConnectionPill");
+  if(status)status.textContent=message;
+  if(pill){pill.textContent=connected?"Device connected":"No external device";pill.classList.toggle("connected",connected);}
+}
+function externalKeyDown(){
+  if(externalKeyIsDown)return;
+  externalKeyIsDown=true;
+  keyerDown();
+}
+function externalKeyUp(){
+  if(!externalKeyIsDown)return;
+  externalKeyIsDown=false;
+  keyerUp();
+}
+async function connectMidiKey(){
+  if(!navigator.requestMIDIAccess){setDeviceStatus("Web MIDI is unavailable in this browser. Try a keyboard-emulating adapter or supported serial interface.");return;}
+  try{
+    midiAccessRef=await navigator.requestMIDIAccess();
+    const inputs=[...midiAccessRef.inputs.values()];
+    if(!inputs.length){setDeviceStatus("MIDI is available, but no MIDI input was found. Connect the adapter and retry.");return;}
+    let activeInput=inputs[0];
+    const onMessage=e=>{
+      const [status,data1,velocity]=e.data||[]; if(status==null)return;
+      const command=status&0xf0;
+      const isDown=command===0x90&&velocity>0;
+      const isUp=command===0x80||(command===0x90&&velocity===0);
+      // Any note/button can act as a straight key; only the first active note is tracked.
+      if(isDown)externalKeyDown(); else if(isUp)externalKeyUp();
+    };
+    inputs.forEach(input=>input.onmidimessage=onMessage);
+    const onState=()=>{
+      const current=[...midiAccessRef.inputs.values()];
+      current.forEach(input=>{if(input!==activeInput)input.onmidimessage=onMessage;});
+      if(!current.length){externalKeyUp();setDeviceStatus("MIDI input disconnected. Reconnect the adapter to continue.");}
+    };
+    midiAccessRef.onstatechange=onState;
+    keyDeviceCleanup=()=>{inputs.forEach(input=>{if(input.onmidimessage===onMessage)input.onmidimessage=null;});if(midiAccessRef)midiAccessRef.onstatechange=null;externalKeyUp();};
+    setDeviceStatus(`Connected to MIDI input: ${activeInput.name||"Unnamed MIDI device"}. Note-on keys down; note-off releases.`,true);
+  }catch(err){setDeviceStatus(`MIDI connection failed: ${err.message||err}. Check browser permission and retry.`);}
+}
+async function connectSerialKey(){
+  if(!navigator.serial){setDeviceStatus("Web Serial is unavailable here. Use a Chromium-based browser on a supported platform, or use MIDI/keyboard input.");return;}
+  try{
+    serialPortRef=await navigator.serial.requestPort();
+    await serialPortRef.open({baudRate:9600});
+    if(!serialPortRef.readable)throw new Error("The selected port has no readable stream.");
+    serialReaderRef=serialPortRef.readable.getReader();
+    const decoder=new TextDecoder(); let buffer="";
+    keyDeviceCleanup=async()=>{externalKeyUp();try{if(serialReaderRef){await serialReaderRef.cancel();serialReaderRef.releaseLock();}}catch(_){}try{if(serialPortRef)await serialPortRef.close();}catch(_){}serialReaderRef=null;serialPortRef=null;};
+    setDeviceStatus("Serial connected. Protocol: send DOWN/UP or 1/0 on separate lines. Generic serial devices require a compatible firmware protocol.",true);
+    (async()=>{
+      try{
+        while(serialReaderRef){const {value,done}=await serialReaderRef.read();if(done)break;buffer+=decoder.decode(value,{stream:true});
+          const lines=buffer.split(/\r?\n/);buffer=lines.pop()||"";
+          for(const line of lines){const token=line.trim().toUpperCase();if(["DOWN","1","KEYDOWN","ON"].includes(token))externalKeyDown();else if(["UP","0","KEYUP","OFF"].includes(token))externalKeyUp();}
+        }
+      }catch(err){if(serialPortRef)setDeviceStatus(`Serial input stopped: ${err.message||err}`);}finally{externalKeyUp();}
+    })();
+  }catch(err){setDeviceStatus(`Serial connection cancelled or failed: ${err.message||err}.`);}
+}
+document.getElementById("connectMidiBtn").addEventListener("click",connectMidiKey);
+document.getElementById("connectSerialBtn").addEventListener("click",connectSerialKey);
+document.getElementById("disconnectDeviceBtn").addEventListener("click",async()=>{
+  try{if(keyDeviceCleanup)await keyDeviceCleanup();}finally{keyDeviceCleanup=null;externalKeyUp();setDeviceStatus("Disconnected. Software key and keyboard controls remain available.");}
+});
+if(navigator.serial&&navigator.serial.addEventListener){navigator.serial.addEventListener("disconnect",()=>{externalKeyUp();setDeviceStatus("Serial adapter disconnected.");});}
+window.addEventListener("blur",externalKeyUp);
+
+// Versioned full backup of Keyline-owned local data only; validate before replacing anything.
+const BACKUP_KEYS=["cw-trainer-progress","keyline-custom-codebook-v1","keyline-transmission-history-v1","keyline-settings-v1"];
+function downloadJsonFile(filename,data){const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+document.getElementById("exportBackupBtn").addEventListener("click",()=>{
+  try{saveKeylineSettings();const payload={format:"keyline-backup",version:1,exportedAt:new Date().toISOString(),data:{}};BACKUP_KEYS.forEach(key=>{const value=localStorage.getItem(key);if(value!==null)payload.data[key]=JSON.parse(value);});
+    downloadJsonFile(`keyline-backup-${new Date().toISOString().slice(0,10)}.json`,payload);document.getElementById("backupStatus").textContent="Full backup exported. Keep the JSON file somewhere safe.";
+  }catch(err){document.getElementById("backupStatus").textContent=`Backup export failed: ${err.message||err}`;}
+});
+document.getElementById("importBackupBtn").addEventListener("click",()=>document.getElementById("backupFileInput").click());
+document.getElementById("backupFileInput").addEventListener("change",async e=>{
+  const file=e.target.files&&e.target.files[0];if(!file)return;
+  try{
+    const payload=JSON.parse(await file.text());
+    if(!payload||payload.format!=="keyline-backup"||payload.version!==1||!payload.data||typeof payload.data!=="object"||Array.isArray(payload.data))throw new Error("This is not a supported Keyline backup.");
+    const incoming={};
+    BACKUP_KEYS.forEach(key=>{if(Object.prototype.hasOwnProperty.call(payload.data,key)){const value=payload.data[key];
+      if(key==="cw-trainer-progress"&&(!value||typeof value!=="object"||Array.isArray(value)))throw new Error("Progress data is invalid.");
+      if(key==="keyline-custom-codebook-v1"&&(!Array.isArray(value)||value.some(r=>!r||typeof r.trigger!=="string"||typeof r.replacement!=="string")))throw new Error("Codebook data is invalid.");
+      if(key==="keyline-transmission-history-v1"&&(!Array.isArray(value)||value.some(r=>!r||typeof r!=="object")))throw new Error("History data is invalid.");
+      if(key==="keyline-settings-v1"&&(!value||typeof value!=="object"||Array.isArray(value)))throw new Error("Settings data is invalid.");
+      incoming[key]=JSON.stringify(value);
+    }});
+    if(!Object.keys(incoming).length)throw new Error("The backup contains no recognised Keyline data.");
+    if(!confirm("Import this backup and replace the matching Keyline data in this browser? Export a backup of current data first if you may need it."))return;
+    Object.entries(incoming).forEach(([key,value])=>localStorage.setItem(key,value));
+    document.getElementById("backupStatus").textContent="Backup imported. Reload Keyline to refresh all training statistics and tools.";
+    document.getElementById("codebookStatus").textContent="Backup imported; reload to refresh codebook.";
+  }catch(err){document.getElementById("backupStatus").textContent=`Import failed; existing data was not intentionally changed: ${err.message||err}`;}
+  finally{e.target.value="";}
+});
+
+// Persist trainer controls and apply stored values on startup.
+["charWpm","effWpm","toneHz"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{
+  charWpm=Number(document.getElementById("charWpm").value)||20;
+  effWpm=Math.min(charWpm,Number(document.getElementById("effWpm").value)||10);
+  toneHz=Number(document.getElementById("toneHz").value)||600;
+  saveKeylineSettings();
+}));
+document.getElementById("charWpm").value=charWpm;document.getElementById("effWpm").value=effWpm;document.getElementById("toneHz").value=toneHz;
+if(persistedSettings.sessionLen && [...document.getElementById("sessionLen").options].some(o=>o.value===persistedSettings.sessionLen))document.getElementById("sessionLen").value=persistedSettings.sessionLen;
+// Populate imported codebook field on startup and expose initial reference render.
+document.getElementById("codebookInput").value=codebookRules.map(r=>`${r.trigger} | ${r.replacement} | ${r.meaning||""}`).join("\n");
+renderMorseReference();renderProsigns();updateSpeedCalc();
 
 render();
 renderPracticeIdle();
