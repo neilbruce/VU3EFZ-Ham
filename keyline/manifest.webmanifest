@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "Keyline CW Trainer",
+  "short_name": "Keyline",
+  "description": "Offline-first CW practice and Morse code trainer.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0b09",
+  "theme_color": "#0a0b09",
+  "icons": [
+    {
+      "src": "./assets/keyline.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "utilities"]
+}
