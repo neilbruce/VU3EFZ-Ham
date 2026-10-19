@@ -6,20 +6,20 @@ This repository collects tools for programming radio sets and practising CW.
 
 **Built by Ms. Neil Bruce VU3EFZ**
 
-A portable CW/Morse trainer with a hosted/PWA-oriented edition and a standalone single-file HTML edition.
+Keyline is an independent local-first CW/Morse trainer with a hosted/PWA edition and a portable standalone HTML edition.
 
+- [Open the public Keyline app](https://neilbruce.github.io/VU3EFZ-Ham/keyline/)
 - [Open Keyline project files](keyline/)
-- [Hosted app entry point](keyline/index.html)
-- [Download/open the standalone HTML edition](keyline/Keyline-Standalone.html)
-- [Feature status and limitations](keyline/docs/FEATURE_MATRIX.md)
-- [Release testing checklist](keyline/docs/RELEASE_TEST_CHECKLIST.md)
+- [Standalone HTML edition](keyline/Keyline-Standalone.html)
+- [Feature matrix and online-feature limits](keyline/docs/FEATURE_MATRIX.md)
+- [Release test checklist](keyline/docs/RELEASE_TEST_CHECKLIST.md)
 
-### Publish Keyline with GitHub Pages
+### Studio+ features
 
-A workflow is included at .github/workflows/deploy-pages.yml. In repository Settings → Pages, set the publishing source to **GitHub Actions**. The workflow then deploys the repository root on pushes to main; the expected app URL is:
+Includes course and adaptive listening practice, custom lessons and daily drills, CW Racer Learn/Sprint/speed ladder, five local arcade modes, scripted POTA/SKCC/contest QSO practice, local operator XP/streaks/achievements, themes and accessibility controls, modular workspace layout, and local data backup/restore.
 
-https://neilbruce.github.io/VU3EFZ-Ham/keyline/
+The standalone edition is a single-file HTML app for local practice. The public hosted edition is deployed by the [GitHub Pages workflow](.github/workflows/deploy-pages.yml).
 
-The URL is only live after Pages is enabled and the workflow succeeds.
+### Community/backend status
 
-The training app is designed to work locally. Live community services (ON AIR relay, chat, duel matchmaking, shared leaderboard and cross-device sync) are not enabled in this release. See the [backend notes](keyline/supabase/README.md) before developing online features.
+Community controls are optional and not connected to a configured shared backend. ON AIR relay, global chat, a complete duel system, shared score submission, verified badges, community totals, AI QSO and cloud sync are not all live services in this release. Review [feature status and security limitations](keyline/docs/FEATURE_MATRIX.md) before enabling online sharing. Do not publish a Supabase service-role key in frontend code.

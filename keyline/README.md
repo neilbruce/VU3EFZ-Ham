@@ -2,36 +2,37 @@
 
 **Built by Ms. Neil Bruce VU3EFZ**
 
-Keyline is an independent CW/Morse practice application. This folder contains a hosted/PWA-oriented edition, a portable single-file HTML edition, documentation, and a starter schema for future online community features.
+Keyline is an independent, local-first CW/Morse trainer with a hosted/PWA-oriented edition and a standalone HTML edition.
 
-## Editions
+## Open Keyline
 
-- **Hosted/PWA edition:** [index.html](index.html) — intended for HTTPS hosting. The HTML is self-contained and embeds the app source.
-- **Standalone edition:** [Keyline-Standalone.html](Keyline-Standalone.html) — a self-contained HTML file; download it and open locally in a recent browser.
+- [Hosted app](https://neilbruce.github.io/VU3EFZ-Ham/keyline/)
+- [Project files](./)
+- [Download/open standalone HTML](Keyline-Standalone.html)
+- [Feature status and limitations](docs/FEATURE_MATRIX.md)
+- [Architecture and next steps](docs/ARCHITECTURE.md)
+- [Release test checklist](docs/RELEASE_TEST_CHECKLIST.md)
 
-## GitHub Pages deployment
+## Studio+ highlights
 
-The repository includes the workflow at [deploy-pages.yml](../.github/workflows/deploy-pages.yml). In repository **Settings → Pages**, select **GitHub Actions** as the publishing source. The workflow deploys the repository root on pushes to main; the expected hosted app path is:
+The integrated experience combines Keyline's course and listening tools with CW Racer Learn/Sprint/speed ladder; five local arcade practice modes; a scripted Basic/POTA/SKCC/contest QSO bot; mistake-weighted practice; daily drills; operator profile, local XP/streaks/achievements; themes and accessibility options; bilingual English/Spanish Studio+ labels; modular workspace layout; and local data backup/restore.
 
-https://neilbruce.github.io/VU3EFZ-Ham/keyline/
+## Public deployment
 
-The URL is live only after Pages is enabled and the workflow succeeds. Follow the deployment status in the [Actions tab](https://github.com/neilbruce/VU3EFZ-Ham/actions).
+GitHub Pages is deployed by [the workflow](../.github/workflows/deploy-pages.yml). This repo publishes its root, so the hosted app is available under the keyline/ project path. Follow the [Actions tab](https://github.com/neilbruce/VU3EFZ-Ham/actions) if a new deployment is running.
 
-## Online services status
+The standalone edition embeds the app code and runs locally in a modern browser. It does not require a login or cloud account.
 
-GitHub Pages is static hosting; it does not provide a database, authentication, live presence, moderation or realtime messaging. The supabase/ directory contains a starter schema only. Chat, ON AIR, Duel, and live leaderboards are **not implemented as functional online services** in this release. Do not enable public community services until authentication, row-level access policies, moderation, abuse reporting, rate limits, data retention and consent have been reviewed.
+## Online features and security
 
-## Privacy and portability
+The community panel can connect to an operator-managed Supabase project, but **no live shared backend is configured by this release**. Global Chat and ON AIR have client-side paths that need the migration and carefully scoped policies; Duel matchmaking is incomplete; shared score submission, verified identity/badges, community counters, local AI and cloud sync are not implemented.
 
-- Local training does not require an account.
-- Progress is stored in the current browser/device and is not automatically synced.
-- Export backups regularly and transfer/import them between devices.
-- Never place private API keys or service-role secrets in frontend files or GitHub Pages.
+The provided Supabase migration is a safe-by-default schema starter with Row Level Security enabled and no permissive public policies. It is not a ready public community server. Never put a service-role secret in the frontend. For a public service, add abuse prevention, moderation/reporting, rate limits, retention rules and clear consent for shared callsigns/messages/key events.
 
 ## Testing status
 
-JavaScript syntax and static duplicate-ID checks passed in the build workspace. Full browser/device/audio regression testing has not been completed. Use the checklist in [docs/RELEASE_TEST_CHECKLIST.md](docs/RELEASE_TEST_CHECKLIST.md) before relying on a deployed build.
+The JavaScript syntax and static ID checks were run on the local integrated build. A headless browser run did not complete in the build environment, and full browser/device/audio regression testing remains outstanding. Please test the actual hosted build on desktop, phone and tablet before relying on timing or audio-sensitive features.
 
-## Inspiration and licensing
+## Reference
 
-Feature planning referenced the public README of [ZP5DXS/morse-practice](https://github.com/ZP5DXS/morse-practice#readme). This package is an independent implementation and does not bundle that project's source or assets. Respect that project's MIT licence and attribution requirements if code is separately reused.
+Feature planning used the public README of [ZP5DXS/morse-practice](https://github.com/ZP5DXS/morse-practice#readme) as a scope reference. Keyline remains an independent implementation and does not bundle that project's source or artwork.
