@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<rect width="512" height="512" rx="96" fill="#0a0b09"/>
+<rect x="42" y="42" width="428" height="428" rx="64" fill="#1b1d19" stroke="#3e423a" stroke-width="8"/>
+<g fill="#ffb000"><circle cx="130" cy="256" r="27"/><rect x="184" y="229" width="190" height="54" rx="27"/><circle cx="410" cy="256" r="15"/></g>
+<text x="256" y="390" fill="#ffb000" font-family="monospace" font-size="52" font-weight="700" text-anchor="middle">KEYLINE</text>
+</svg>
