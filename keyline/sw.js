@@ -1,4 +1,4 @@
-const CACHE_NAME = "keyline-shell-v4";
+const CACHE_NAME = "keyline-shell-v5";
 const CORE = [
   "./",
   "./index.html",
