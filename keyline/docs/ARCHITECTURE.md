@@ -9,6 +9,10 @@
 - **Optional community connector:** user-supplied Supabase project URL and public anon key with local opt-in. No credentials/backend are preconfigured.
 - **Supabase migration:** schema starter with RLS enabled and no permissive public policies. This is not a provisioned production backend.
 
+## Responsive layout
+
+The hosted and standalone wrappers inject a responsive layout layer into the core HTML before booting Studio+. On wide viewports above 1280 CSS pixels, the core training desk and Studio+ align at the top in a two-column workbench; at 1280 CSS pixels and below, they stack into one centred, phone-friendly column. The keyer transcript and Studio displays wrap long content, and nested cards/rows are constrained to the panel width. Service-worker cache version v4 invalidates older cached app shells when the updated release deploys.
+
 ## Service boundaries
 
 | Capability | Local | Backend needed |
