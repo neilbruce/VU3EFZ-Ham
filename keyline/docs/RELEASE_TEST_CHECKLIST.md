@@ -47,3 +47,12 @@
 - [ ] Legacy CW Arcade defaults to the full A–Z alphabet; mixed letters/numbers and progressive Koch-pool modes are selectable.
 - [ ] Arcade prompt, answer choices, and replay all use the selected pool after changing it.
 - [ ] Repeat the checks on hosted and standalone editions, and after an offline reload.
+
+
+## Cross-panel responsive layout
+
+- [ ] At desktop widths above 1280 CSS px, Keyline core and Studio+ panels align at the top in a two-column layout.
+- [ ] At 1280 CSS px and below, the core and Studio+ stack vertically in one readable column.
+- [ ] Check at 320, 360, 390 and 430 CSS px; body scroll remains vertical and no panel creates horizontal scrolling.
+- [ ] Change orientation/resize from desktop to phone width and confirm both panels reflow without reload.
+- [ ] Confirm the service worker v4 replaces any v3 shell cache after deployment.
