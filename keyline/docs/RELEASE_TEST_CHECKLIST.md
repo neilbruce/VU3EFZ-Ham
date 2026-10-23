@@ -37,3 +37,13 @@
 - [ ] Offline reload after a successful first visit.
 - [ ] Verify backup restore after clearing the app cache/site storage.
 - [ ] Test a clean browser profile with no old service-worker cache.
+
+
+## Phone layout and arcade regression
+
+- [ ] At 320 px, 360 px, 390 px and 430 px CSS viewport widths, the document has no horizontal overflow.
+- [ ] Key-input decoded transcript wraps within the keyer panel and buttons remain fully visible.
+- [ ] Studio+ cards, rows, prompts, and long transcript text do not widen the page.
+- [ ] Legacy CW Arcade defaults to the full A–Z alphabet; mixed letters/numbers and progressive Koch-pool modes are selectable.
+- [ ] Arcade prompt, answer choices, and replay all use the selected pool after changing it.
+- [ ] Repeat the checks on hosted and standalone editions, and after an offline reload.
