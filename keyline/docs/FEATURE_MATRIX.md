@@ -43,3 +43,12 @@ The Studio+ community panel includes connector controls for Supabase. There is n
 - Do not enable public chat or ON AIR write policies without authentication or abuse controls, validation, rate limiting, moderation/reporting, data-retention rules, and clear consent about sharing callsigns/key events.
 
 The reference feature scope was informed by the public README of [ZP5DXS/morse-practice](https://github.com/ZP5DXS/morse-practice#readme). Keyline is an independent implementation and does not include that project's source or assets.
+
+
+## Progress durability and portable backups
+
+- **Autosave:** added. Existing localStorage keys remain the live app store; writes are mirrored to IndexedDB when the browser supports it.
+- **Startup recovery:** added. Before the trainer scripts initialise, missing Keyline-managed entries are restored from the IndexedDB recovery copy.
+- **Version-key migration:** supported for recognised versioned settings, course/profile, codebook, and history stores when the current target key is absent.
+- **Portable JSON backup:** expanded to include core trainer progress, settings, codebook, transmission history, expanded practice, and Studio+ profile/rewards.
+- **Limits:** this does not create cloud sync. Data can still be lost if the user clears all site data, uses a private/temporary browser profile, or moves to a different browser/device without importing a backup. File/standalone storage support depends on the browser. Cookies are not used as the progress database.
