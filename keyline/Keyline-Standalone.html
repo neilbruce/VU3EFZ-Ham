@@ -8,6 +8,31 @@ async function unzip(value){const bytes=Uint8Array.from(atob(value),c=>c.charCod
 (async()=>{
  try {
   let page=await unzip(DATA);
+  if (!page.includes("Keyline phone + arcade fixes v1")) {
+    page = page.replace('</style>', "\n/* Keyline phone + arcade fixes v1 */\nhtml,body{width:100%;max-width:100%;overflow-x:clip}\nbody{min-width:0;padding:clamp(4px,2.5vw,20px)}\n.card{width:100%;max-width:640px;min-width:0}\n.card *{min-width:0}\n.keyer-console,.keyer-console>*{min-width:0;max-width:100%}\n.keyer-decoded{\n display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;\n white-space:normal;overflow-wrap:anywhere;word-break:break-word;\n line-height:1.22;letter-spacing:clamp(.02em,1.3vw,.12em);\n font-size:clamp(17px,4.8vw,28px);padding:4px 2px;\n}\n.keyer-pattern{max-width:100%;overflow-wrap:anywhere;word-break:break-word;letter-spacing:clamp(.03em,.7vw,.15em)}\n#typedInput{min-width:0;max-width:100%;letter-spacing:clamp(.04em,1.2vw,.4em)}\n#keylineExtended,#ksStudio{min-width:0;max-width:100%;width:100%}\n#keylineExtended .kx-row,#ksStudio .ks-row{min-width:0;max-width:100%}\n#keylineExtended .kx-row>* ,#ksStudio .ks-row>*{min-width:0;max-width:100%}\n#keylineExtended .kx-big,#ksStudio .ks-display,#ksStudio .ks-log{overflow-wrap:anywhere;word-break:break-word}\n@media(max-width:760px){\n body{justify-content:flex-start;align-items:flex-start;padding:6px}\n .card{padding:clamp(10px,3vw,16px);border-radius:14px}\n .keyer-decoded{font-size:clamp(17px,5.2vw,25px);letter-spacing:.04em}\n .keyer-console{gap:10px;padding:10px}\n .keyer-btn{max-width:100%;touch-action:manipulation}\n #keylineExtended .kx-actions button{flex:1 1 calc(50% - 8px)}\n #ksStudio{padding:clamp(9px,2.5vw,18px)}\n #ksStudio .ks-card{padding:clamp(8px,2.5vw,14px)}\n #ksStudio .ks-row{gap:6px}\n #ksStudio .ks-row>*{flex:1 1 auto}\n}\n@media(max-width:360px){\n .card{padding:8px}\n .keyer-console{padding:8px}\n .keyer-decoded{font-size:17px;letter-spacing:.015em}\n #keylineExtended .kx-grid{grid-template-columns:minmax(0,1fr)}\n #ksStudio .ks-stats{grid-template-columns:repeat(2,minmax(0,1fr))}\n}" + '</style>');
+    const gameDescription = '<p class="kx-sub">A quick copy-by-ear game. Play the character, select its identity, score points, and build a streak.</p>\n      <div class="kx-grid">';
+    const fixedGameDescription = '<p class="kx-sub">A quick copy-by-ear game. Play the character, select its identity, score points, and build a streak.</p>\n      <div class="kx-row"><label for="kxGamePool">Training pool</label><select id="kxGamePool"><option value="letters" selected>All letters A–Z</option><option value="mixed">Letters + numbers</option><option value="course">Current Koch lesson pool</option></select><span class="kx-stat">Starts with the full alphabet; choose the course pool only for progressive practice.</span></div>\n      <div class="kx-grid">';
+    if (!page.includes('id="kxGamePool"')) {
+      if (!page.includes(gameDescription)) throw new Error("Could not locate the CW Arcade controls");
+      page = page.replace(gameDescription, fixedGameDescription);
+    }
+    const gamePoolFn = '  function gamePool(){\n    const mode=$("kxGamePool")?.value||"letters";\n    return mode==="course"?availablePool():mode==="mixed"?sets.mixed:sets.letters;\n  }\n  function newGame(){';
+    if (!page.includes('function gamePool()')) {
+      if (!page.includes('  function newGame(){')) throw new Error("Could not locate CW Arcade game logic");
+      page = page.replace('  function newGame(){', gamePoolFn);
+    }
+    page = page.replace('gameTarget=pick(availablePool()); displayChar("kxGamePrompt",gameTarget,true);',
+                        'gameTarget=pick(gamePool()); displayChar("kxGamePrompt",gameTarget,true);');
+    page = page.replace('renderChoices("kxGameAnswers",gameTarget,availablePool(),"kxGameFeedback",good=>{',
+                        'renderChoices("kxGameAnswers",gameTarget,gamePool(),"kxGameFeedback",good=>{');
+    page = page.replace('playMorse(gameTarget||pick(availablePool()))',
+                        'playMorse(gameTarget||pick(gamePool()))');
+    const playHandler = '$("kxGamePlay").addEventListener("click",()=>playMorse(gameTarget||pick(gamePool())));';
+    if (page.includes(playHandler) && !page.includes('kxGamePool").addEventListener("change"')) {
+      page = page.replace(playHandler, playHandler + '\n    $("kxGamePool").addEventListener("change",()=>newGame());');
+    }
+  }
+
   let studio=await unzip(STUDIO_DATA);
   studio=studio.replace('id="ksQsoRepeat" type="checkbox"', 'id="ksQsoRepeatEnabled" type="checkbox"');
   studio=studio.replace('community_messages?select=id,created_at,display_callsign,body&order=created_at.desc&limit=40','community_messages?select=id,created_at,display_callsign,body&room_id=eq.${room}&order=created_at.desc&limit=40');
