@@ -56,3 +56,12 @@
 - [ ] Check at 320, 360, 390 and 430 CSS px; body scroll remains vertical and no panel creates horizontal scrolling.
 - [ ] Change orientation/resize from desktop to phone width and confirm both panels reflow without reload.
 - [ ] Confirm the service worker v4 replaces any v3 shell cache after deployment.
+
+
+## CW Arcade answer-state regression
+
+- [ ] Choose a correct answer and confirm it is highlighted with readable contrast.
+- [ ] Choose an incorrect answer and confirm both the incorrect choice and the correct answer remain readable.
+- [ ] Confirm the answer buttons briefly lock to prevent double scoring, then a new target and four enabled options appear automatically.
+- [ ] Press NEXT or change the training pool during the pause and confirm there is no stale timer replacing the newly selected round.
+- [ ] Repeat on the hosted edition and standalone HTML on Android Chrome, iOS Safari and desktop browsers.
