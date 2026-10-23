@@ -34,7 +34,9 @@ async function unzip(value){const bytes=Uint8Array.from(atob(value),c=>c.charCod
   }
 
   let studio=await unzip(STUDIO_DATA);
-  studio=studio.replace('id="ksQsoRepeat" type="checkbox"', 'id="ksQsoRepeatEnabled" type="checkbox"');\n  studio=studio.replace('width:100%;max-width:100%;min-width:0;overflow-wrap:anywhere;margin:26px 0 8px;padding:18px;', 'flex:1 1 700px;width:auto;max-width:1160px;min-width:0;overflow-wrap:anywhere;margin:0;padding:18px;');\n  studio=studio.replace('@media(max-width:560px){#ksStudio{padding:11px}', '@media(max-width:1280px){#ksStudio{flex:0 1 auto;width:100%;max-width:640px;margin:0 auto}}@media(max-width:560px){#ksStudio{padding:11px}');
+  studio=studio.replace('id="ksQsoRepeat" type="checkbox"', 'id="ksQsoRepeatEnabled" type="checkbox"');
+  studio=studio.replace('width:100%;max-width:100%;min-width:0;overflow-wrap:anywhere;margin:26px 0 8px;padding:18px;', 'flex:1 1 700px;width:auto;max-width:1160px;min-width:0;overflow-wrap:anywhere;margin:0;padding:18px;');
+  studio=studio.replace('@media(max-width:560px){#ksStudio{padding:11px}', '@media(max-width:1280px){#ksStudio{flex:0 1 auto;width:100%;max-width:640px;margin:0 auto}}@media(max-width:560px){#ksStudio{padding:11px}');
   studio=studio.replace('community_messages?select=id,created_at,display_callsign,body&order=created_at.desc&limit=40','community_messages?select=id,created_at,display_callsign,body&room_id=eq.${room}&order=created_at.desc&limit=40');
   studio=studio.replace("{display_callsign:data.callsign||'Guest',body:body.slice(0,400)}","{room_id:data.community.room||'general',display_callsign:data.callsign||'Guest',body:body.slice(0,400)}");
   studio=studio.replace('for(const r of rows||[]){onairSince=r.created_at;if(r.callsign===data.callsign)continue;await playElement','for(const r of rows||[]){if(onairSince && r.created_at<=onairSince)continue;onairSince=r.created_at;if(r.callsign===data.callsign)continue;await playElement');
