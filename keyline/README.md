@@ -23,6 +23,14 @@ GitHub Pages is deployed by [the workflow](../.github/workflows/deploy-pages.yml
 
 The standalone edition embeds the app code and runs locally in a modern browser. It does not require a login or cloud account.
 
+## Progress persistence and recovery
+
+Keyline auto-saves progress and settings to browser storage and, when supported, maintains a second recovery copy in IndexedDB. On startup it restores missing Keyline storage entries before the trainer initialises and migrates recognised older versioned keys. The automatic recovery store stays within the same browser origin/profile; it is not a cloud account and does not transfer progress automatically between browsers or devices.
+
+The **Export Backup / Import Backup** controls now include the core trainer statistics, settings, custom codebook, transmission history, expanded practice course/game data, and Studio+ profile/rewards. Download a backup before switching to the standalone file, moving devices/browsers, clearing site data, or using private/incognito browsing. Import it in the destination app to transfer progress.
+
+This intentionally uses localStorage plus IndexedDB rather than cookies: cookies are small and are not suitable for detailed training histories. No browser-only method can recover data after the browser's site data (including IndexedDB) is explicitly cleared or when storage is unavailable/evicted.
+
 ## Online features and security
 
 The community panel can connect to an operator-managed Supabase project, but **no live shared backend is configured by this release**. Global Chat and ON AIR have client-side paths that need the migration and carefully scoped policies; Duel matchmaking is incomplete; shared score submission, verified identity/badges, community counters, local AI and cloud sync are not implemented.
