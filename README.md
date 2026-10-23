@@ -20,6 +20,10 @@ Includes course and adaptive listening practice, custom lessons and daily drills
 
 The standalone edition is a single-file HTML app for local practice. The public hosted edition is deployed by the [GitHub Pages workflow](.github/workflows/deploy-pages.yml).
 
+### Progress protection
+
+Keyline now autosaves locally and keeps an IndexedDB recovery copy when supported. The hosted app restores missing Keyline-managed records before startup and recognises selected older versioned storage keys. The **Export Backup / Import Backup** controls include core progress, settings, codebook, history, expanded practice and Studio+ rewards/profile. This is same-browser recovery, not cloud sync; export a JSON backup before switching device/browser, using standalone HTML, clearing site data or private browsing.
+
 ### Community/backend status
 
 Community controls are optional and not connected to a configured shared backend. ON AIR relay, global chat, a complete duel system, shared score submission, verified badges, community totals, AI QSO and cloud sync are not all live services in this release. Review [feature status and security limitations](keyline/docs/FEATURE_MATRIX.md) before enabling online sharing. Do not publish a Supabase service-role key in frontend code.

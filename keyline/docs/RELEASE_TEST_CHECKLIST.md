@@ -65,3 +65,16 @@
 - [ ] Confirm the answer buttons briefly lock to prevent double scoring, then a new target and four enabled options appear automatically.
 - [ ] Press NEXT or change the training pool during the pause and confirm there is no stale timer replacing the newly selected round.
 - [ ] Repeat on the hosted edition and standalone HTML on Android Chrome, iOS Safari and desktop browsers.
+
+
+## Progress persistence and recovery
+
+- [ ] Make progress in core listening/course practice, change settings, add a codebook rule and a transmission history item; reload and confirm they remain.
+- [ ] Make Studio+ progress (XP/achievement/score), expanded lesson progress and game scores; reload and confirm they remain.
+- [ ] Confirm the IndexedDB `keyline-progress-durable` store is updated after a save and when the tab becomes hidden.
+- [ ] In a test profile only, remove one current Keyline localStorage key while preserving IndexedDB; reload and confirm the missing entry is restored before app startup.
+- [ ] In a test profile only, simulate an older versioned Studio+ key and confirm migration occurs only when the current key is missing.
+- [ ] Export a JSON backup and confirm the backup includes core stats, settings, codebook, history, expanded practice and Studio+ profile/reward data.
+- [ ] Import that backup in a clean test profile and confirm each supported section restores correctly.
+- [ ] Verify the app explains that browser/site-data clearing and separate devices/origins require a manual backup; do not claim cookies or local storage are cloud sync.
+- [ ] Confirm service worker v6 replaces the v5 app-shell cache after deployment.

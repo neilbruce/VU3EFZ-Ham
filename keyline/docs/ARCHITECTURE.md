@@ -13,6 +13,14 @@
 
 The hosted and standalone wrappers inject a responsive layout layer into the core HTML before booting Studio+. On wide viewports above 1280 CSS pixels, the core training desk and Studio+ align at the top in a two-column workbench; at 1280 CSS pixels and below, they stack into one centred, phone-friendly column. The keyer transcript and Studio displays wrap long content, and nested cards/rows are constrained to the panel width. Service-worker cache version v4 invalidates older cached app shells when the updated release deploys.
 
+## Progress durability
+
+- The synchronous app data remains in the existing localStorage keys so current code can initialise without refactoring every module.
+- Before the inner app document is written, the hosted/standalone bootstrap checks an IndexedDB recovery store and restores only missing Keyline-managed entries. It migrates recognised versioned store names only when the current target is absent.
+- A shim is injected before the app scripts run; it mirrors writes to IndexedDB and requests persistent browser storage on a best-effort basis.
+- Manual JSON backup/restore includes the core trainer, settings, custom codebook, transmission history, expanded practice, and Studio+ profile data.
+- This is same-origin/same-browser recovery, not cloud sync. A user-cleared browser profile/site data, private browsing, another device/browser, or file-origin storage limitations may still require a manually exported backup. Cookies are deliberately not used as the main progress store.
+
 ## Service boundaries
 
 | Capability | Local | Backend needed |
