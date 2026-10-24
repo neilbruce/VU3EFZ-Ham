@@ -21,6 +21,10 @@ The hosted and standalone wrappers inject a responsive layout layer into the cor
 - Manual JSON backup/restore includes the core trainer, settings, custom codebook, transmission history, expanded practice, and Studio+ profile data.
 - This is same-origin/same-browser recovery, not cloud sync. A user-cleared browser profile/site data, private browsing, another device/browser, or file-origin storage limitations may still require a manually exported backup. Cookies are deliberately not used as the main progress store.
 
+## Device-aware control layout
+
+A lightweight device-layout helper measures the current CSS viewport and applies mobile/tablet/desktop classes to the document root. It locates the six core practice modes (Group, Word, Call, QSO, Text, Echo) by their accessible button labels, groups them into a responsive toolbar, and lets CSS reflow them without changing their actions or state. The current breakpoints are mobile at 600 CSS px or less, tablet at 601–1100, and desktop above 1100. Resize and orientation-change events rerun detection so the interface adapts when a device rotates or a browser window changes width. Related Fast Unlock and QRM controls are only styled as a separate group when they do not share the same toolbar ancestor, to avoid accidentally overriding the mode grid.
+
 ## Service boundaries
 
 | Capability | Local | Backend needed |
