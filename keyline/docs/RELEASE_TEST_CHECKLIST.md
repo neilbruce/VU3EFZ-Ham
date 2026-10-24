@@ -78,3 +78,14 @@
 - [ ] Import that backup in a clean test profile and confirm each supported section restores correctly.
 - [ ] Verify the app explains that browser/site-data clearing and separate devices/origins require a manual backup; do not claim cookies or local storage are cloud sync.
 - [ ] Confirm service worker v6 replaces the v5 app-shell cache after deployment.
+
+
+## Device-adaptive training controls
+
+- [ ] On a phone (320–600 CSS px), Group/Word/Call/QSO/Text/Echo mode controls reflow into a readable three-column grid.
+- [ ] Fast Unlock and QRM controls remain visible and do not force horizontal scrolling or shrink the six mode choices into unreadable pills.
+- [ ] Long mode names/wrapped labels remain centred and fully readable; buttons have usable touch target height.
+- [ ] On tablet widths (601–1100 CSS px), mode controls use a four-column layout.
+- [ ] On desktop widths (>1100 CSS px), mode controls use the full six-column toolbar.
+- [ ] Resize/orientation-change from phone to tablet/laptop without reloading and confirm the layout updates automatically.
+- [ ] Repeat on the hosted app and standalone HTML; confirm the PWA v7 cache replaces the earlier toolbar layout.
